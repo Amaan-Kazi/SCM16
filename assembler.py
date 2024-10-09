@@ -1,44 +1,29 @@
 from pyparsing import Word, alphas, alphanums, Group, Optional, Suppress, OneOrMore, nums, Literal
 
-## TODO ##
-## implement RAM
-
-"""
-opcode_list = {
-    # ALU
+alu_opcodes = {
     'ADD', 'SUB', 'MUL', 'DIV', 'MOD',
     'SHL', 'SHR', 'ASHR',
-    'AND', 'OR', 'XOR', 'NOT',
+    'AND', 'OR', 'XOR', 'NOT'
+}
 
-    # COND
+cond_opcodes = {
     'JMP', 'BEQ', 'BNE',
     'BLT', 'BLTU', 'BLE', 'BLEU',
-    'BGT', 'BGTU', 'BGE', 'BGEU',
-
-    # RAM
-    'LOAD', 'STORE'
+    'BGT', 'BGTU', 'BGE', 'BGEU'
 }
 
-registers = {
-    'R0': '000',  # Register 0 (R0) - Zero register
-    'R1': '001',  # Register 1 (R1)
-    'R2': '010',  # Register 2 (R2)
-    'R3': '011',  # Register 3 (R3)
-    'R4': '100',  # Register 4 (R4)
-    'R5': '101',  # Register 5 (R5)
-    'R6': '110',  # Register 6 (R6)
-    'R7': '111',  # Register 7 (R7)
-    'R8': '000',  # Special jump register (JMP) - Value can only be stored, not read
+ram_opcodes = {
+    'LOAD',
+    'STORE'
 }
-"""
-
-alu_opcodes = { 'ADD', 'SUB', 'MUL', 'DIV', 'MOD', 'SHL', 'SHR', 'ASHR', 'AND', 'OR', 'XOR', 'NOT' }
-cond_opcodes = { 'JMP', 'BEQ', 'BNE', 'BLT', 'BLTU', 'BLE', 'BLEU', 'BGT', 'BGTU', 'BGE', 'BGEU' }
-ram_opcodes = { 'LOAD', 'STORE' }
 
 opcode = Word(alphas)
 register = Word("R", nums)
 immediate = Word(nums)
+sourceLabel = Suppress("@") + Word(alphanums) + Suppress(":")
+destLabel = Suppress("@") + Word(alphanums)
+
+labels = {}
 
 def validateOpcode(tokens):
     modifiedToken = str(tokens[0])
@@ -79,15 +64,34 @@ def validateImmediate(tokens):
         raise ValueError(f"Invalid Immediate: {tokens[0]}. Valid range (both inclusive) is from 0 to 65535")
     return tokens[0]
 
+def addLabel(tokens):
+    global labels
+    labelName = str(tokens[0])
+
+    if labelName in labels:
+        raise ValueError(f"Label '{labelName}' is already defined.")
+
+    labels[labelName] = 0 # give address of next instruction later
+    return labelName
+
+def validateLabel(tokens):
+    global labels
+    labelName = str(tokens[0])
+
+    if not labelName in labels:
+        raise ValueError(f"Label '{labelName}' is not defined.")
+    return tokens[0]
+
 instruction = Group(
+    Optional(sourceLabel.setParseAction(addLabel)) +
     opcode.setParseAction(validateOpcode) +
     (register.setParseAction(validateDestRegister) | immediate.setParseAction(validateImmediate)) +
     (register.setParseAction(validateSourceRregister) | immediate.setParseAction(validateImmediate)) +
-    register.setParseAction(validateDestRegister)
+    (register.setParseAction(validateDestRegister) | immediate.setParseAction(validateImmediate) | destLabel.setParseAction(validateLabel))
 )
 
-example_instruction_1 = "IADDI R1 R2 R1"
-example_instruction_2 = "JMPI 2007 R7 R8"
+example_instruction_1 = "@asd: ADD R1 R2 R1"
+example_instruction_2 = "@def: JMPI 2007 R7 @def"
 example_instruction_3 = "ILOAD R5 R6 R7"
 
 parsed_instruction_1 = instruction.parseString(example_instruction_1)
