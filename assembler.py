@@ -1,7 +1,6 @@
 from pyparsing import Word, alphas, alphanums, Group, Optional, Suppress, OneOrMore, nums, Literal
 
 ## TODO ##
-## implement IMD values
 ## implement RAM
 
 """
@@ -38,44 +37,58 @@ cond_opcodes = { 'JMP', 'BEQ', 'BNE', 'BLT', 'BLTU', 'BLE', 'BLEU', 'BGT', 'BGTU
 ram_opcodes = { 'LOAD', 'STORE' }
 
 opcode = Word(alphas)
-sourceRegister1 = Word("R", nums)
-sourceRegister2 = Word("R", nums)
-destRegister = Word("R", nums)
+register = Word("R", nums)
+immediate = Word(nums)
 
-def opcode_category(tokens):
-    if tokens[0] in alu_opcodes:
-        return ('ALU', tokens[0])
-    elif tokens[0] in cond_opcodes:
-        return ('COND', tokens[0])
-    elif tokens[0] in ram_opcodes:
-        return ('RAM', tokens[0])
+def validateOpcode(tokens):
+    modifiedToken = str(tokens[0])
+    immediate1Flag = False
+    immediate2Flag = False
+
+    if (modifiedToken.startswith("I")):
+        immediate1Flag = True
+        modifiedToken = modifiedToken[1:]
+
+    if (modifiedToken.endswith("I")):
+        immediate2Flag = True
+        modifiedToken = modifiedToken[:-1]
+
+    if modifiedToken in alu_opcodes:
+        return ('ALU', modifiedToken, immediate1Flag, immediate2Flag)
+    elif modifiedToken in cond_opcodes:
+        return ('COND', modifiedToken, immediate1Flag, immediate2Flag)
+    elif modifiedToken in ram_opcodes:
+        return ('RAM', modifiedToken, immediate1Flag, immediate2Flag)
     else:
-        raise ValueError(f"Invalid OPCODE: {tokens[0]}")
+        raise ValueError(f"Invalid OPCODE: {modifiedToken}")
 
-def validate_source_register(tokens):
+def validateSourceRregister(tokens):
     reg_number = tokens[0][1:]  # Get the number part after 'R'
-    # Check for source registers (R0 to R7)
     if (not reg_number.isdigit()) or (int(reg_number) < 0) or (int(reg_number) > 7):
         raise ValueError(f"Invalid register: {tokens[0]}. Valid registers are R0 to R7 for Source.")
-    return tokens[0]  # Return the original register token if valid
+    return tokens[0]
 
-def validate_dest_register(tokens):
-    reg_number = tokens[0][1:]  # Get the number part after 'R'
-    # Check for source registers (R0 to R7)
+def validateDestRegister(tokens):
+    reg_number = tokens[0][1:]
     if (not reg_number.isdigit()) or (int(reg_number) < 0) or (int(reg_number) > 8):
         raise ValueError(f"Invalid register: {tokens[0]}. Valid registers are R0 to R8 for Destination.")
-    return tokens[0]  # Return the original register token if valid
+    return tokens[0]
+
+def validateImmediate(tokens):
+    if (not tokens[0].isdigit()) or (int(tokens[0]) < 0) or (int(tokens[0]) > 65535):
+        raise ValueError(f"Invalid Immediate: {tokens[0]}. Valid range (both inclusive) is from 0 to 65535")
+    return tokens[0]
 
 instruction = Group(
-    opcode.setParseAction(opcode_category) +
-    sourceRegister1.setParseAction(validate_source_register) +
-    sourceRegister2.setParseAction(validate_source_register) +
-    destRegister.setParseAction(validate_dest_register)
+    opcode.setParseAction(validateOpcode) +
+    (register.setParseAction(validateDestRegister) | immediate.setParseAction(validateImmediate)) +
+    (register.setParseAction(validateSourceRregister) | immediate.setParseAction(validateImmediate)) +
+    register.setParseAction(validateDestRegister)
 )
 
-example_instruction_1 = "ADD R1 R2 R1"
-example_instruction_2 = "JMP R6 R7 R8"
-example_instruction_3 = "LOAD R5 R6 R7"
+example_instruction_1 = "IADDI R1 R2 R1"
+example_instruction_2 = "JMPI 2007 R7 R8"
+example_instruction_3 = "ILOAD R5 R6 R7"
 
 parsed_instruction_1 = instruction.parseString(example_instruction_1)
 parsed_instruction_2 = instruction.parseString(example_instruction_2)
