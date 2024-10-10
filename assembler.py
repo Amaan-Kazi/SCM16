@@ -24,6 +24,7 @@ sourceLabel = Suppress("@") + Word(alphanums) + Suppress(":")
 destLabel = Suppress("@") + Word(alphanums)
 
 labels = {}
+instructionNo = 0
 
 def validateOpcode(tokens):
     modifiedToken = str(tokens[0])
@@ -71,7 +72,7 @@ def addLabel(tokens):
     if labelName in labels:
         raise ValueError(f"Label '{labelName}' is already defined.")
 
-    labels[labelName] = 0 # give address of next instruction later
+    labels[labelName] = instructionNo + 4 # address of next instruction
     return labelName
 
 def validateLabel(tokens):
@@ -90,14 +91,22 @@ instruction = Group(
     (register.setParseAction(validateDestRegister) | immediate.setParseAction(validateImmediate) | destLabel.setParseAction(validateLabel))
 )
 
-example_instruction_1 = "@asd: ADD R1 R2 R1"
-example_instruction_2 = "@def: JMPI 2007 R7 @def"
-example_instruction_3 = "ILOAD R5 R6 R7"
+asmFile = input("Assembly File Name [in /ASM, no extension]: ")
+print("\n")
 
-parsed_instruction_1 = instruction.parseString(example_instruction_1)
-parsed_instruction_2 = instruction.parseString(example_instruction_2)
-parsed_instruction_3 = instruction.parseString(example_instruction_3)
+with open(f"ASM/{str(asmFile)}.assembly", "r") as file:
+    for line in file:
+        # Remove any leading/trailing whitespace characters (including newline)
+        line = line.strip()
 
-print(parsed_instruction_1.asList())
-print(parsed_instruction_2.asList())
-print(parsed_instruction_3.asList())
+        # Skip lines that start with a '#' (comments) or empty lines
+        if not line or line.startswith('#'):
+            continue
+
+        try:
+            parsed_instruction = instruction.parseString(line)
+            print(parsed_instruction.asList())
+        except Exception as e:
+            print(f"\nError parsing instruction {instructionNo}: {line}\n{e}")
+            exit()
+        instructionNo += 4
