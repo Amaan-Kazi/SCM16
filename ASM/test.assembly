@@ -1,4 +1,4 @@
-@asd: ADD R1 R2 R1
+@asd: BEQ R1 R2 R1
 
 # test comment
 @def: JMPI 2007 R7 @def
