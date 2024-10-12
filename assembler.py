@@ -44,25 +44,25 @@ def validateOpcode(tokens):
         modifiedToken = modifiedToken[:-1]
 
     if modifiedToken in alu_opcodes:
-        return ("Opcode", 'ALU', modifiedToken, alu_opcodes[modifiedToken], immediate1Flag, immediate2Flag)
+        return ("Opcode", 'ALU', str(tokens[9]), alu_opcodes[modifiedToken], immediate1Flag, immediate2Flag)
     elif modifiedToken in cond_opcodes:
-        return ("Opcode", 'COND', modifiedToken, cond_opcodes[modifiedToken], immediate1Flag, immediate2Flag)
+        return ("Opcode", 'COND', str(tokens[0]), cond_opcodes[modifiedToken], immediate1Flag, immediate2Flag)
     elif modifiedToken in ram_opcodes:
-        return ("Opcode", 'RAM', modifiedToken, ram_opcodes[modifiedToken], immediate1Flag, immediate2Flag)
+        return ("Opcode", 'RAM', str(tokens[0]), ram_opcodes[modifiedToken], immediate1Flag, immediate2Flag)
     else:
         raise ValueError(f"Invalid OPCODE: {modifiedToken}")
 
-def validateSourceRregister(tokens):
+def validateSourceRegister(tokens):
     reg_number = tokens[0][1:]  # Get the number part after 'R'
     if (not reg_number.isdigit()) or (int(reg_number) < 0) or (int(reg_number) > 7):
         raise ValueError(f"Invalid register: {tokens[0]}. Valid registers are R0 to R7 for Source.")
-    return ("Register", tokens[0])
+    return ("Register", reg_number)
 
 def validateDestRegister(tokens):
     reg_number = tokens[0][1:]
     if (not reg_number.isdigit()) or (int(reg_number) < 0) or (int(reg_number) > 8):
         raise ValueError(f"Invalid register: {tokens[0]}. Valid registers are R0 to R8 for Destination.")
-    return ("Register", tokens[0])
+    return ("Register", reg_number)
 
 def validateImmediate(tokens):
     if (not tokens[0].isdigit()) or (int(tokens[0]) < 0) or (int(tokens[0]) > 65535):
@@ -76,7 +76,7 @@ def addLabel(tokens):
     if labelName in labels:
         raise ValueError(f"Label '{labelName}' is already defined.")
 
-    labels[labelName] = instructionNo + 4 # address of next instruction
+    labels[labelName] = instructionNo # address of instruction
     return ("Label", labelName)
 
 def validateLabel(tokens):
@@ -85,27 +85,33 @@ def validateLabel(tokens):
 
     if not labelName in labels:
         raise ValueError(f"Label '{labelName}' is not defined.")
-    return ("label", tokens[0])
+    return ("label", labels[labelName])
 
 instruction = Optional(sourceLabel.setParseAction(addLabel))
 instruction += opcode.setParseAction(validateOpcode)
-instruction += (register.setParseAction(validateDestRegister) | immediate.setParseAction(validateImmediate))
-instruction += (register.setParseAction(validateSourceRregister) | immediate.setParseAction(validateImmediate))
+instruction += (register.setParseAction(validateSourceRegister) | immediate.setParseAction(validateImmediate))
+instruction += (register.setParseAction(validateSourceRegister) | immediate.setParseAction(validateImmediate))
 instruction += (register.setParseAction(validateDestRegister) | immediate.setParseAction(validateImmediate) | destLabel.setParseAction(validateLabel))
 
-asmFile = input("Assembly File Name [in /ASM, no extension]: ")
+scmaFile = input("SCMA File Name [in /SCMA, no extension]: ")
 print("\n")
 
-with open(f"ASM/{str(asmFile)}.assembly", "r") as file:
+fileContents = ""
+
+with open(f"SCMA/{str(scmaFile)}.scma", "r") as file:
     l = 0
-    binary = ""
+    print(f"[SCMA/{str(scmaFile)}.scma]")
 
     for line in file:
         l += 1
         i = 0
 
+        imd1 = False
+        imd2 = False
+
         # Remove any leading/trailing whitespace characters (including newline)
         line = line.strip()
+        print(f"{l:05}| {line}")
 
         # Skip lines that start with a '#' (comments) or empty lines
         if not line or line.startswith('#'):
@@ -113,21 +119,21 @@ with open(f"ASM/{str(asmFile)}.assembly", "r") as file:
 
         try:
             parsed_instruction = instruction.parseString(line)
-            print(parsed_instruction)
         except Exception as e:
-            print(f"\nERROR [Line {l}, Instruction {instructionNo}] \n{line}\n{e}\n")
+            print(f"\nERROR [Line {l:05}, Instruction {instructionNo}] \n{line}\n{e}\n")
             exit()
 
         if (parsed_instruction[i][0] == "Label"):
-            print(parsed_instruction[i])
             i += 1
         intOpcode = 0
 
         if (parsed_instruction[i][4] == True):
             intOpcode += 32768 # 2 ^ 15
+            imd1 = True
 
         if (parsed_instruction[i][5] == True):
             intOpcode += 16384 # 2 ^ 14
+            imd2 = True
 
         if (parsed_instruction[i][1] == "ALU"):
             intOpcode += 0 # 00
@@ -139,6 +145,41 @@ with open(f"ASM/{str(asmFile)}.assembly", "r") as file:
             intOpcode += 12288 # 11
         
         intOpcode += parsed_instruction[i][3]
+        fileContents += f"{hex(int(intOpcode)):<6} "
+        i += 1
 
-        print(intOpcode)
+        if (imd1):
+            if (parsed_instruction[i][0] == "Immediate"):
+                fileContents += f"{hex(int(parsed_instruction[i][1])):<6} "
+            else:
+                raise ValueError(f"OPCODE {parsed_instruction[i-1][2]} requires source 1 to be an immediate value")
+        else:
+            if (parsed_instruction[i][0] == "Register"):
+                fileContents += f"{hex(int(parsed_instruction[i][1])):<6} "
+            else:
+                raise ValueError(f"OPCODE {parsed_instruction[i-1][2]} requires source 1 to be a register")
+        
+        i += 1
+
+        if (imd2):
+            if (parsed_instruction[i][0] == "Immediate"):
+                fileContents += f"{hex(int(parsed_instruction[i][1])):<6} "
+            else:
+                raise ValueError(f"OPCODE {parsed_instruction[i-2][2]} requires source 2 to be an immediate value")
+        else:
+            if (parsed_instruction[i][0] == "Register"):
+                fileContents += f"{hex(int(parsed_instruction[i][1])):<6} "
+            else:
+                raise ValueError(f"OPCODE {parsed_instruction[i-2][2]} requires source 2 to be a register")
+
+        i += 1
+        fileContents += f"{hex(int(parsed_instruction[i][1])):<6} # {line} \n"
+
         instructionNo += 4
+
+with open(f"ASM/{str(scmaFile)}.assembly", "w") as file:
+    file.write(fileContents)
+    
+    print("\n\n--- Assembled Succesfully ---\n")
+    print(f"\n[ASM/{str(scmaFile)}.assembly]")
+    print(fileContents)
