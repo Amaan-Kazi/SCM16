@@ -1,5 +1,9 @@
-@asd: BEQ R1 R2 R1
+# This program will check if many instructions are working properly
 
-# test comment
-@def: JMPI R6 16 @asd
-ILOAD 200 R6 R8
+@loop: 
+ADDI R1 1 R1 # R1++
+
+IADDI 0 
+BGTUI R1 5 @end # if R1 > 5 jump to @end
+
+@end: 

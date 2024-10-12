@@ -1,0 +1,5 @@
+@asd: BEQ R1 R2 @def
+
+# test comment
+@def: JMPI R6 16 @asd
+ILOAD 200 R6 R7

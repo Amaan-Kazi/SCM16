@@ -1,8 +1,7 @@
 from pyparsing import Word, alphas, alphanums, Group, Optional, Suppress, OneOrMore, nums, Literal
 
 ## TODO ##
-## Convert to int: source and destination words
-## convert ints to hex and output to file
+## HALT
 
 alu_opcodes = {
     'ADD': 0, 'SUB': 1, 'MUL': 2, 'DIV': 3, 'MOD': 4,
@@ -52,16 +51,10 @@ def validateOpcode(tokens):
     else:
         raise ValueError(f"Invalid OPCODE: {modifiedToken}")
 
-def validateSourceRegister(tokens):
+def validateRegister(tokens):
     reg_number = tokens[0][1:]  # Get the number part after 'R'
     if (not reg_number.isdigit()) or (int(reg_number) < 0) or (int(reg_number) > 7):
-        raise ValueError(f"Invalid register: {tokens[0]}. Valid registers are R0 to R7 for Source.")
-    return ("Register", reg_number)
-
-def validateDestRegister(tokens):
-    reg_number = tokens[0][1:]
-    if (not reg_number.isdigit()) or (int(reg_number) < 0) or (int(reg_number) > 8):
-        raise ValueError(f"Invalid register: {tokens[0]}. Valid registers are R0 to R8 for Destination.")
+        raise ValueError(f"Invalid register: {tokens[0]}. Valid registers are R0 to R7")
     return ("Register", reg_number)
 
 def validateImmediate(tokens):
@@ -70,6 +63,12 @@ def validateImmediate(tokens):
     return ("Immediate", tokens[0])
 
 def addLabel(tokens):
+    global labels
+    labelName = str(tokens[0])
+
+    return ("Label", labelName)
+
+def addPrePassLabel(tokens):
     global labels
     labelName = str(tokens[0])
 
@@ -82,21 +81,45 @@ def addLabel(tokens):
 def validateLabel(tokens):
     global labels
     labelName = str(tokens[0])
+    return ("Label", labelName)
 
-    if not labelName in labels:
-        raise ValueError(f"Label '{labelName}' is not defined.")
-    return ("label", labels[labelName])
+opcode.setParseAction(validateOpcode)
+register.setParseAction(validateRegister)
+immediate.setParseAction(validateImmediate)
+destLabel.setParseAction(validateLabel)
 
-instruction = Optional(sourceLabel.setParseAction(addLabel))
-instruction += opcode.setParseAction(validateOpcode)
-instruction += (register.setParseAction(validateSourceRegister) | immediate.setParseAction(validateImmediate))
-instruction += (register.setParseAction(validateSourceRegister) | immediate.setParseAction(validateImmediate))
-instruction += (register.setParseAction(validateDestRegister) | immediate.setParseAction(validateImmediate) | destLabel.setParseAction(validateLabel))
+instruction = Optional(sourceLabel)
+instruction += opcode
+instruction += (register | immediate | destLabel)
+instruction += (register | immediate | destLabel)
+instruction += (register | immediate | destLabel)
 
 scmaFile = input("SCMA File Name [in /SCMA, no extension]: ")
 print("\n")
 
+sourceLabel.setParseAction(addPrePassLabel)
+# Pre pass to collect labels
+with open(f"SCMA/{str(scmaFile)}.scma", "r") as file:
+    l = 0
+
+    for line in file:
+        l += 1
+        i = 0
+
+        line = line.strip()
+
+        if not line or line.startswith('#'):
+            continue
+        
+        try:
+            parsed_instruction = instruction.parseString(line)
+        except Exception as e:
+            print(f"\nERROR on Pre Pass [Line {l:05}, Instruction {instructionNo}] \n{line}\n{e}\n")
+            exit()
+
+instructionNo = 0
 fileContents = ""
+sourceLabel.setParseAction(addLabel)
 
 with open(f"SCMA/{str(scmaFile)}.scma", "r") as file:
     l = 0
@@ -119,63 +142,79 @@ with open(f"SCMA/{str(scmaFile)}.scma", "r") as file:
 
         try:
             parsed_instruction = instruction.parseString(line)
+        
+            if (parsed_instruction[i][0] == "Label"):
+                i += 1
+            intOpcode = 0
+
+            if (parsed_instruction[i][4] == True):
+                intOpcode += 32768 # 2 ^ 15
+                imd1 = True
+
+            if (parsed_instruction[i][5] == True):
+                intOpcode += 16384 # 2 ^ 14
+                imd2 = True
+
+            if (parsed_instruction[i][1] == "ALU"):
+                intOpcode += 0 # 00
+            elif (parsed_instruction[i][1] == "COND"):
+                intOpcode += 4096 # 01
+            elif (parsed_instruction[i][1] == "RAM"):
+                intOpcode += 8192 # 10
+            elif (parsed_instruction[i][1] == "IO"):
+                intOpcode += 12288 # 11
+            
+            intOpcode += parsed_instruction[i][3]
+            fileContents += f"{hex(int(intOpcode)):<6} "
+            i += 1
+
+            if (imd1):
+                if (parsed_instruction[i][0] == "Immediate"):
+                    fileContents += f"{hex(int(parsed_instruction[i][1])):<6} "
+                elif (parsed_instruction[i][0] == "Label"):
+                    if not parsed_instruction[i][1] in labels:
+                        raise ValueError(f"Label '{parsed_instruction[i][1]}' is not defined.")
+                    else:
+                        fileContents += f"{hex(int(labels[parsed_instruction[i][1]])):<6} "
+                else:
+                    raise ValueError(f"OPCODE {parsed_instruction[i-1][2]} requires source 1 to be an immediate value")
+            else:
+                if (parsed_instruction[i][0] == "Register"):
+                    fileContents += f"{hex(int(parsed_instruction[i][1])):<6} "
+                else:
+                    raise ValueError(f"OPCODE {parsed_instruction[i-1][2]} requires source 1 to be a register")
+            
+            i += 1
+
+            if (imd2):
+                if (parsed_instruction[i][0] == "Immediate"):
+                    fileContents += f"{hex(int(parsed_instruction[i][1])):<6} "
+                elif (parsed_instruction[i][0] == "Label"):
+                    if not parsed_instruction[i][1] in labels:
+                        raise ValueError(f"Label '{parsed_instruction[i][1]}' is not defined.")
+                    else:
+                        fileContents += f"{hex(int(labels[parsed_instruction[i][1]])):<6} "
+                else:
+                    raise ValueError(f"OPCODE {parsed_instruction[i-2][2]} requires source 2 to be an immediate value")
+            else:
+                if (parsed_instruction[i][0] == "Register"):
+                    fileContents += f"{hex(int(parsed_instruction[i][1])):<6} "
+                else:
+                    raise ValueError(f"OPCODE {parsed_instruction[i-2][2]} requires source 2 to be a register")
+
+            i += 1
+            if (parsed_instruction[i][0] == "Label"):
+                if not parsed_instruction[i][1] in labels:
+                    raise ValueError(f"Label '{parsed_instruction[i][1]}' is not defined.")
+                else:
+                    fileContents += f"{hex(int(labels[parsed_instruction[i][1]])):<6} # {line} \n"
+            else:
+                fileContents += f"{hex(int(parsed_instruction[i][1])):<6} # {line} \n"
+
+            instructionNo += 4
         except Exception as e:
             print(f"\nERROR [Line {l:05}, Instruction {instructionNo}] \n{line}\n{e}\n")
             exit()
-
-        if (parsed_instruction[i][0] == "Label"):
-            i += 1
-        intOpcode = 0
-
-        if (parsed_instruction[i][4] == True):
-            intOpcode += 32768 # 2 ^ 15
-            imd1 = True
-
-        if (parsed_instruction[i][5] == True):
-            intOpcode += 16384 # 2 ^ 14
-            imd2 = True
-
-        if (parsed_instruction[i][1] == "ALU"):
-            intOpcode += 0 # 00
-        elif (parsed_instruction[i][1] == "COND"):
-            intOpcode += 4096 # 01
-        elif (parsed_instruction[i][1] == "RAM"):
-            intOpcode += 8192 # 10
-        elif (parsed_instruction[i][1] == "IO"):
-            intOpcode += 12288 # 11
-        
-        intOpcode += parsed_instruction[i][3]
-        fileContents += f"{hex(int(intOpcode)):<6} "
-        i += 1
-
-        if (imd1):
-            if (parsed_instruction[i][0] == "Immediate"):
-                fileContents += f"{hex(int(parsed_instruction[i][1])):<6} "
-            else:
-                raise ValueError(f"OPCODE {parsed_instruction[i-1][2]} requires source 1 to be an immediate value")
-        else:
-            if (parsed_instruction[i][0] == "Register"):
-                fileContents += f"{hex(int(parsed_instruction[i][1])):<6} "
-            else:
-                raise ValueError(f"OPCODE {parsed_instruction[i-1][2]} requires source 1 to be a register")
-        
-        i += 1
-
-        if (imd2):
-            if (parsed_instruction[i][0] == "Immediate"):
-                fileContents += f"{hex(int(parsed_instruction[i][1])):<6} "
-            else:
-                raise ValueError(f"OPCODE {parsed_instruction[i-2][2]} requires source 2 to be an immediate value")
-        else:
-            if (parsed_instruction[i][0] == "Register"):
-                fileContents += f"{hex(int(parsed_instruction[i][1])):<6} "
-            else:
-                raise ValueError(f"OPCODE {parsed_instruction[i-2][2]} requires source 2 to be a register")
-
-        i += 1
-        fileContents += f"{hex(int(parsed_instruction[i][1])):<6} # {line} \n"
-
-        instructionNo += 4
 
 with open(f"ASM/{str(scmaFile)}.assembly", "w") as file:
     file.write(fileContents)
