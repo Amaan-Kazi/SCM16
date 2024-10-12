@@ -43,7 +43,7 @@ def validateOpcode(tokens):
         modifiedToken = modifiedToken[:-1]
 
     if modifiedToken in alu_opcodes:
-        return ("Opcode", 'ALU', str(tokens[9]), alu_opcodes[modifiedToken], immediate1Flag, immediate2Flag)
+        return ("Opcode", 'ALU', str(tokens[0]), alu_opcodes[modifiedToken], immediate1Flag, immediate2Flag)
     elif modifiedToken in cond_opcodes:
         return ("Opcode", 'COND', str(tokens[0]), cond_opcodes[modifiedToken], immediate1Flag, immediate2Flag)
     elif modifiedToken in ram_opcodes:
@@ -118,6 +118,8 @@ with open(f"SCMA/{str(scmaFile)}.scma", "r") as file:
         except Exception as e:
             print(f"\nERROR on Pre Pass [Line {l:05}, Instruction {instructionNo}] \n{line}\n{e}\n")
             exit()
+
+        instructionNo += 4
 
 instructionNo = 0
 fileContents = ""

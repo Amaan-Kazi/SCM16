@@ -1,9 +1,11 @@
-# This program will check if many instructions are working properly
+# This program will test a few instructions
 
-@loop: 
+ISHRI 32 1 R5
+
+@loop: MULI R1 3 R2
 ADDI R1 1 R1 # R1++
-
-IADDI 0 
 BGTUI R1 5 @end # if R1 > 5 jump to @end
+JMP R0 R0 @loop
 
-@end: 
+@end: SHLI R5 1 R4
+HALT 0 0 0
