@@ -48,6 +48,8 @@ def validateOpcode(tokens):
         return ("Opcode", 'COND', str(tokens[0]), cond_opcodes[modifiedToken], immediate1Flag, immediate2Flag)
     elif modifiedToken in ram_opcodes:
         return ("Opcode", 'RAM', str(tokens[0]), ram_opcodes[modifiedToken], immediate1Flag, immediate2Flag)
+    elif modifiedToken == "HALT":
+        return ("HALT", "HALT", "1111", immediate1Flag, immediate2Flag)
     else:
         raise ValueError(f"Invalid OPCODE: {modifiedToken}")
 
@@ -146,6 +148,15 @@ with open(f"SCMA/{str(scmaFile)}.scma", "r") as file:
             if (parsed_instruction[i][0] == "Label"):
                 i += 1
             intOpcode = 0
+
+            if (parsed_instruction[i][1] == "HALT"):
+                intOpcode = 65535
+                intOpcode += parsed_instruction[i][3]
+
+                temp = 0
+                fileContents += f"{hex(int(intOpcode)):<6} {hex(temp):<6} {hex(temp):<6} {hex(temp):<6} # HALT \n"
+                instructionNo += 4
+                continue
 
             if (parsed_instruction[i][4] == True):
                 intOpcode += 32768 # 2 ^ 15

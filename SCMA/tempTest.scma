@@ -3,3 +3,5 @@
 # test comment
 @def: JMPI R6 16 @asd
 ILOAD 200 R6 R7
+
+HALT 0 0 0
