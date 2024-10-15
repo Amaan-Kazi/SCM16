@@ -1,0 +1,17 @@
+{
+    "scopeName": "source.assembly",
+    "patterns": [
+        {
+            "name": "constant.numeric.hex.assembly",
+            "match": "\\b0[xX][0-9a-fA-F]+\\b"
+        },
+        {
+            "name": "comment.line.assembly",
+            "match": "#.*"
+        }
+    ],
+    "repository": {},
+    "names": "assembly",
+    "fileTypes": ["assembly"],
+    "uuid": "00000000-0000-0000-0000-000000000000"
+}

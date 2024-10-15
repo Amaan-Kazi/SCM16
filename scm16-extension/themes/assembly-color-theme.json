@@ -1,0 +1,36 @@
+{
+    "name": "Assembly Color Theme",
+    "colors": {},
+    "tokenColors": [
+        {
+            "scope": "constant.numeric.hex.assembly",
+            "settings": {
+                "foreground": "#FFA500"  // Orange for first hex word
+            }
+        },
+        {
+            "scope": "meta.word2.assembly",
+            "settings": {
+                "foreground": "#FFFF00"  // Yellow for second hex word
+            }
+        },
+        {
+            "scope": "meta.word3.assembly",
+            "settings": {
+                "foreground": "#00FF00"  // Green for third hex word
+            }
+        },
+        {
+            "scope": "meta.word4.assembly",
+            "settings": {
+                "foreground": "#0000FF"  // Blue for fourth hex word
+            }
+        },
+        {
+            "scope": "comment.line.assembly",
+            "settings": {
+                "foreground": "#808080"  // Gray for comments
+            }
+        }
+    ]
+}
