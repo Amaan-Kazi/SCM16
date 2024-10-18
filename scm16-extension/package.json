@@ -1,55 +1,54 @@
 {
-  "name": "scm16-extension",
-  "displayName": "SCM16 Extension",
-  "description": "Simple code highlighting and suggestions for files of SCM16",
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.94.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [],
-  "main": "./extension.js",
-  "contributes": {
-    "languages": [
-        {
-            "id": "assembly",
-            "aliases": ["Assembly", "assembly"],
-            "extensions": [".assembly"],
-            "configuration": "./language-configuration.json"
-        }
+    "name": "scm16-extension",
+    "publisher": "AmaanKazi",
+    "displayName": "SCM16 Extension",
+    "description": "Simple code highlighting and suggestions for files of SCM16",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.94.0"
+    },
+    "categories": [
+        "Programming Languages"
     ],
-    "grammars": [
-        {
-            "language": "assembly",
-            "scopeName": "source.assembly",
-            "path": "./syntaxes/assembly.tmLanguage.json"
-        }
+    "activationEvents": [
+        "onLanguage:assembly"
     ],
-    "themes": [
+    "main": "./extension.js",
+    "contributes": {
+        "languages": [
+            {
+                "id": "assembly",
+                "aliases": ["Assembly", "assembly"],
+                "extensions": [".assembly"],
+                "configuration": "./configurations/assembly-language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "assembly",
+                "scopeName": "custom.source.assembly",
+                "path": "./syntaxes/assembly.tmLanguage.json"
+            }
+        ],
+        "themes": [
         {
             "label": "Assembly Theme",
             "uiTheme": "vs-dark",
             "path": "./themes/assembly-color-theme.json"
         }
-    ],
-    "commands": [{
-      "command": "scm16-extension.helloWorld",
-      "title": "Hello World"
-    }]
-  },
-  "scripts": {
-    "lint": "eslint .",
-    "pretest": "npm run lint",
-    "test": "vscode-test"
-  },
-  "devDependencies": {
-    "@types/vscode": "^1.94.0",
-    "@types/mocha": "^10.0.8",
-    "@types/node": "20.x",
-    "eslint": "^9.11.1",
-    "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
-  }
+        ]
+    },
+    "scripts": {
+        "lint": "eslint .",
+        "pretest": "npm run lint",
+        "test": "vscode-test"
+    },
+    "devDependencies": {
+        "@types/vscode": "^1.94.0",
+        "@types/mocha": "^10.0.8",
+        "@types/node": "20.x",
+        "eslint": "^9.11.1",
+        "@vscode/test-cli": "^0.0.10",
+        "@vscode/test-electron": "^2.4.1"
+    }
 }

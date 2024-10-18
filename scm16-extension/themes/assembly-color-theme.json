@@ -1,35 +1,34 @@
 {
     "name": "Assembly Color Theme",
-    "colors": {},
     "tokenColors": [
         {
-            "scope": "constant.numeric.hex.assembly",
+            "scope": "custom.word1.assembly",
             "settings": {
-                "foreground": "#FFA500"  // Orange for first hex word
+                "foreground": "#FF7F50"
             }
         },
         {
-            "scope": "meta.word2.assembly",
+            "scope": "custom.word2.assembly",
             "settings": {
-                "foreground": "#FFFF00"  // Yellow for second hex word
+                "foreground": "#ADD8E6"
             }
         },
         {
-            "scope": "meta.word3.assembly",
+            "scope": "custom.word3.assembly",
             "settings": {
-                "foreground": "#00FF00"  // Green for third hex word
+                "foreground": "#87CEFA"
             }
         },
         {
-            "scope": "meta.word4.assembly",
+            "scope": "custom.word4.assembly",
             "settings": {
-                "foreground": "#0000FF"  // Blue for fourth hex word
+                "foreground": "#FFD700"
             }
         },
         {
-            "scope": "comment.line.assembly",
+            "scope": "custom.comment.assembly",
             "settings": {
-                "foreground": "#808080"  // Gray for comments
+                "foreground": "#808080"
             }
         }
     ]

@@ -1,12 +1,24 @@
 {
-    "scopeName": "source.assembly",
+    "scopeName": "custom.source.assembly",
     "patterns": [
         {
-            "name": "constant.numeric.hex.assembly",
-            "match": "\\b0[xX][0-9a-fA-F]+\\b"
+            "name": "custom.word1.assembly",
+            "match": "^\\s*0[xX][0-9a-fA-F]+"
         },
         {
-            "name": "comment.line.assembly",
+            "name": "custom.word2.assembly",
+            "match": "(?<=^\\s*0[xX][0-9a-fA-F]+\\s+)0[xX][0-9a-fA-F]+"
+        },
+        {
+            "name": "custom.word3.assembly",
+            "match": "(?<=^\\s*0[xX][0-9a-fA-F]+\\s+0[xX][0-9a-fA-F]+\\s+)0[xX][0-9a-fA-F]+"
+        },
+        {
+            "name": "custom.word4.assembly",
+            "match": "(?<=\\s+)0[xX][0-9a-fA-F]+(?=\\s*#|\\s*$)"
+        },
+        {
+            "name": "custom.comment.assembly",
             "match": "#.*"
         }
     ],

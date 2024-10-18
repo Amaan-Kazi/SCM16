@@ -17,6 +17,11 @@ ram_opcodes = {
     'STORE': 1
 }
 
+io_opcodes = {
+    'PRINT': 0,
+    'STORE': 1
+}
+
 opcode = Word(alphas)
 register = Word("R", nums)
 immediate = Word(nums)
@@ -45,6 +50,8 @@ def validateOpcode(tokens):
         return ("Opcode", 'COND', str(tokens[0]), cond_opcodes[modifiedToken], immediate1Flag, immediate2Flag)
     elif modifiedToken in ram_opcodes:
         return ("Opcode", 'RAM', str(tokens[0]), ram_opcodes[modifiedToken], immediate1Flag, immediate2Flag)
+    elif modifiedToken in io_opcodes:
+        return ("Opcode", 'IO', str(tokens[0]), io_opcodes[modifiedToken], immediate1Flag, immediate2Flag)
     elif modifiedToken == "HALT":
         return ("HALT", "HALT", "1111", immediate1Flag, immediate2Flag)
     else:
@@ -52,8 +59,8 @@ def validateOpcode(tokens):
 
 def validateRegister(tokens):
     reg_number = tokens[0][1:]  # Get the number part after 'R'
-    if (not reg_number.isdigit()) or (int(reg_number) < 0) or (int(reg_number) > 7):
-        raise ValueError(f"Invalid register: {tokens[0]}. Valid registers are R0 to R7")
+    if (not reg_number.isdigit()) or (int(reg_number) < 0) or (int(reg_number) > 11):
+        raise ValueError(f"Invalid register: {tokens[0]}. Valid registers are R0 to R11")
     return ("Register", reg_number)
 
 def validateImmediate(tokens):
