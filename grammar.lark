@@ -1,11 +1,30 @@
-start: var_decl+
+start: statement+
 
-var_decl: TYPE NAME "=" NUMBER ";"
+statement: var_decl
+         | assign_stmt
+
+var_decl: TYPE NAME "=" expr ";"
+
+assign_stmt: NAME "=" expr ";"
+
+expr: term
+    | expr "+" term   -> add
+    | expr "-" term   -> subtract
+
+term: factor
+    | NAME            // Variable names
+    | NUMBER          // Numbers
+
+factor: term "*" term -> multiply
+      | term "/" term -> divide
+      | "(" expr ")"  // Parentheses for grouping
 
 TYPE: "int16" | "int32"
 NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
 NUMBER: /-?\d+/
 
-%import common.WS_INLINE  // Import common whitespace handling
-%ignore WS_INLINE           // Ignore inline whitespace
-%ignore /\s+/              // Ignore spaces and tabs
+// Ignore single-line comments
+%ignore /\/\/[^\n]*/  // Ignore everything after //
+%import common.WS_INLINE // Import common whitespace handling
+%ignore WS_INLINE        // Ignore inline whitespace
+%ignore /\s+/           // Ignore spaces and tabs

@@ -10,7 +10,8 @@ parser = Lark(grammar)
 # Input code to parse
 input_code = """
 int16 a = 10;
-int32 b = -30000;
+int16 b = -30000;
+int16 c = a + b; // works
 """
 
 # Parse the code
