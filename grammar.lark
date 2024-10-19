@@ -1,0 +1,11 @@
+start: var_decl+
+
+var_decl: TYPE NAME "=" NUMBER ";"
+
+TYPE: "int16" | "int32"
+NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
+NUMBER: /-?\d+/
+
+%import common.WS_INLINE  // Import common whitespace handling
+%ignore WS_INLINE           // Ignore inline whitespace
+%ignore /\s+/              // Ignore spaces and tabs
