@@ -1,3 +1,7 @@
+ICOLORI 0 0 0    # BLACK
+#ICOLORI 65535 255 0 # WHITE
+FILL 0 0 0
+
 ICOLORI 255 0 0  # color = RED
 label loop1      # do {
 PIXELI 2 0 0     #   plot(R2, 0)
