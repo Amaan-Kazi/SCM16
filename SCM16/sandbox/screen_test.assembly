@@ -1,0 +1,14 @@
+ICOLORI 255 0 0  # color = RED
+label loop1      # do {
+PIXELI 2 0 0     #   plot(R2, 0)
+ADDI 2 1 2       #   R2++
+BLTUI 2 96 loop1 # } while (R2 < 96)
+
+ADDI 0 0 2       # R2 = 0
+ICOLORI 0 255 0  # color = BLUE
+label loop2      # do {
+IPIXEL 0 2 0     #   plot(0, R2)
+ADDI 2 1 2       #   R2++
+BLTUI 2 64 loop2 # } while (R2 < 64)
+
+HALT
