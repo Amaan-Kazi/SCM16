@@ -2,29 +2,64 @@ start: statement+
 
 statement: var_decl
          | assign_stmt
+         | expr_stmt
+         | if_stmt
+         | while_stmt
+         | for_stmt
+         | func_decl
+         | return_stmt
 
-var_decl: TYPE NAME "=" expr ";"
+var_decl: TYPE NAME ("=" expr)? ";" // int a | int a = 5
+assign_stmt: NAME "=" expr ";"      // a = 10;
+expr_stmt: expr ";"                 // for function calls like print(a);
 
-assign_stmt: NAME "=" expr ";"
+if_stmt: "if" "(" expr ")" block ("else" block)?                                     // if () {} optional(else {})
+while_stmt: "while" "(" expr ")" block                                               // while () {}
+for_stmt: "for" "(" (var_decl | assign_stmt)? ";" expr? ";" (assign_stmt)? ")" block // for () {}
 
-expr: term
-    | expr "+" term   -> add
-    | expr "-" term   -> subtract
+func_decl: TYPE NAME "(" param_list? ")" block // int func (int a, string b) {}
+param_list: (TYPE NAME) ("," TYPE NAME)*       // int a, string b
+return_stmt: "return" expr? ";"                // return func(a); | return a;
 
-term: factor
-    | NAME            // Variable names
-    | NUMBER          // Numbers
+block: "{" statement* "}" // {}
 
-factor: term "*" term -> multiply
-      | term "/" term -> divide
-      | "(" expr ")"  // Parentheses for grouping
+?expr: expr "&&" expr -> and_op
+     | expr "||" expr -> or_op
+     | expr "==" expr -> eq_op
+     | expr "!=" expr -> neq_op
+     | expr "<" expr -> lt_op
+     | expr ">" expr -> gt_op
+     | expr "<=" expr -> leq_op
+     | expr ">=" expr -> geq_op
+     | expr "+" expr -> add
+     | expr "-" expr -> subtract
+     | expr "*" expr -> multiply
+     | expr "/" expr -> divide
+     | expr "%" expr -> modulus
 
-TYPE: "int16" | "int32"
+// expr: term
+//     | expr "+" term   -> add
+//     | expr "-" term   -> subtract
+
+// term: factor
+//     | NAME            // Variable names
+//     | NUMBER          // Numbers
+
+// factor: term "*" term -> multiply
+//       | term "/" term -> divide
+//       | "(" expr ")"  // Parentheses for grouping
+
+func_call: NAME "(" arg_list? ")"
+arg_list: expr ("," expr)*
+
+TYPE: "int" | "bool" | "string"
 NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
 NUMBER: /-?\d+/
+BOOLEAN: "true" | "false"
+STRING: /"[^"]*"/
 
 // Ignore single-line comments
-%ignore /\/\/[^\n]*/  // Ignore everything after //
+%ignore /\/\/[^\n]*/     // Ignore everything after //
 %import common.WS_INLINE // Import common whitespace handling
 %ignore WS_INLINE        // Ignore inline whitespace
-%ignore /\s+/           // Ignore spaces and tabs
+%ignore /\s+/            // Ignore spaces and tabs

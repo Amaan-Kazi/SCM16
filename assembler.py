@@ -1,13 +1,13 @@
 from pyparsing import Word, alphas, alphanums, Optional, Suppress, nums
 
 alu_opcodes = {
-    'ADD': 0, 'SUB': 1, 'MUL': 2, 'DIV': 3, 'MOD': 4,
+    'ADD': 0, 'SUB': 1, 'MUL':  2,  'DIV': 3, 'MOD': 4,
     'SHL': 5, 'SHR': 6, 'ASHR': 7,
-    'AND': 8, 'OR': 9, 'XOR': 10, 'NOT': 11
+    'AND': 8, 'OR':  9, 'XOR':  10, 'NOT': 11
 }
 
 cond_opcodes = {
-    'JMP': 0, 'BEQ': 1, 'BNE': 2,
+    'JMP': 0, 'BEQ':  1, 'BNE': 2,
     'BLT': 3, 'BLTU': 4, 'BLE': 5, 'BLEU': 6,
     'BGT': 7, 'BGTU': 8, 'BGE': 9, 'BGEU': 10
 }
@@ -18,15 +18,16 @@ ram_opcodes = {
 }
 
 io_opcodes = {
-    'PRINT': 0,
-    'STORE': 1
+    'PRINT': 0, 'SCRL':  1,
+    'PIXEL': 2, 'COLOR': 3, 'FILL': 4,
+    'KWAIT': 5, 'KREAD': 6
 }
 
-opcode = Word(alphas)
-register = Word("R", nums)
-immediate = Word(nums)
+opcode      = Word(alphas)
+register    = Word("R", nums)
+immediate   = Word(nums)
 sourceLabel = Suppress("@") + Word(alphanums) + Suppress(":")
-destLabel = Suppress("@") + Word(alphanums)
+destLabel   = Suppress("@") + Word(alphanums)
 
 labels = {}
 instructionNo = 0
