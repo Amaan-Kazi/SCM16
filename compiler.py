@@ -7,13 +7,12 @@ with open('grammar.lark') as f:
 # Create the parser
 parser = Lark(grammar)
 
-# Input code to parse
-input_code = """
-int16 a = 10;
-int16 b = -30000;
-int16 c = a + b; // works
-"""
+scmCodeFile = input("SCMCODE File Name [in /SCMCODE, no extension]: ")
+print("\n")
+
+with open(f"SCMCODE/{str(scmCodeFile)}.scmcode", "r") as file:
+    scmCode = file.read()
 
 # Parse the code
-tree = parser.parse(input_code)
+tree = parser.parse(scmCode)
 print(tree.pretty())
