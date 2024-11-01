@@ -11,6 +11,8 @@ int array[5][1+2] = {
     }
 };
 
+int arr[10] = {1, 2, 25, -8};
+
 int func (int x)
 {
     x = x + 25;

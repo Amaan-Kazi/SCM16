@@ -14,5 +14,5 @@ with open(f"SCMCODE/{str(scmCodeFile)}.scmcode", "r") as file:
     scmCode = file.read()
 
 # Parse the code
-tree = parser.parse(scmCode)
-print(tree.pretty())
+parseTree = parser.parse(scmCode)
+print(parseTree.pretty())

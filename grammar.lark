@@ -11,13 +11,15 @@ statement: var_decl ";"
          | return_stmt ";"
 
 var_decl: (TYPE NAME ("=" expr)?) | array_decl // int a | int a = 5
-assign_stmt: (NAME | ) "=" expr                     // a = 20
+assign_stmt: NAME "=" expr                     // a = 20
 expr_stmt: expr                                // for function calls like print(a);
+
 
 // ARRAYS //
 array: TYPE NAME "[" expr "]" ("[" expr "]")*
 array_decl: array ("=" array_init)?
-array_init: "{" ((expr ("," expr)*) | array_init) "}" ("," "{" ((expr ("," expr)*) | array_init) "}")*
+array_init: array_init_elements | ("{" (array_init_elements | array_init) "}" ("," "{" (array_init_elements | array_init) "}")*)
+array_init_elements: (expr ("," expr)*)
 
 array_access: "[" expr "]" ("[" expr "]")*
 array_assign_stmt: NAME array_access "=" expr 
