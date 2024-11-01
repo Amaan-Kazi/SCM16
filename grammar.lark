@@ -2,6 +2,7 @@ start: statement+
 
 statement: var_decl ";"
          | assign_stmt ";"
+         | array_assign_stmt ";"
          | expr_stmt ";"
          | if_stmt
          | while_stmt
@@ -9,17 +10,30 @@ statement: var_decl ";"
          | func_decl
          | return_stmt ";"
 
-var_decl: TYPE NAME ("=" expr)? // int a | int a = 5
-assign_stmt: NAME "=" expr      // a = 10;
-expr_stmt: expr                 // for function calls like print(a);
+var_decl: (TYPE NAME ("=" expr)?) | array_decl // int a | int a = 5
+assign_stmt: (NAME | ) "=" expr                     // a = 20
+expr_stmt: expr                                // for function calls like print(a);
 
-if_stmt: "if" "(" expr ")" block ("else" block)?                                     // if () {} optional(else {})
-while_stmt: "while" "(" expr ")" block                                               // while () {}
-for_stmt: "for" "(" (var_decl | assign_stmt) ";" expr? ";" (assign_stmt) ")" block   // for () {}
+// ARRAYS //
+array: TYPE NAME "[" expr "]" ("[" expr "]")*
+array_decl: array ("=" array_init)?
+array_init: "{" ((expr ("," expr)*) | array_init) "}" ("," "{" ((expr ("," expr)*) | array_init) "}")*
 
+array_access: "[" expr "]" ("[" expr "]")*
+array_assign_stmt: NAME array_access "=" expr 
+
+
+// CONDITIONS & LOOPS //
+if_stmt: "if" "(" expr ")" block ("else" block)?                                 // if () {} optional(else {})
+while_stmt: "while" "(" expr ")" block                                           // while () {}
+for_stmt: "for" "(" (var_decl | assign_stmt) ";" expr? ";" assign_stmt ")" block // for () {}
+
+
+// FUNCTIONS //
 func_decl: TYPE NAME "(" param_list? ")" block // int func (int a, string b) {}
 param_list: (TYPE NAME) ("," TYPE NAME)*       // int a, string b
 return_stmt: "return" expr?                    // return func(a); | return a;
+
 
 block: "{" statement* "}" // {}
 
@@ -36,15 +50,18 @@ block: "{" statement* "}" // {}
      | expr "*"  expr -> multiply
      | expr "/"  expr -> divide
      | expr "%"  expr -> modulus
-     | "(" expr ")"   // paranthesis for grouping
+     | "(" expr ")"   // parenthesis for grouping
+     | NAME array_access
      | NAME
      | NUMBER
      | BOOLEAN
      | STRING
      | func_call
 
+
 func_call: NAME "(" arg_list? ")"
 arg_list: expr ("," expr)*
+
 
 TYPE: "int" | "bool" | "string"
 NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
@@ -52,7 +69,6 @@ NUMBER: /-?\d+/
 BOOLEAN: "true" | "false"
 STRING: /"[^"]*"/
 
-// Ignore single-line comments
 %ignore /\/\/[^\n]*/     // Ignore everything after //
 %import common.WS_INLINE // Import common whitespace handling
 %ignore WS_INLINE        // Ignore inline whitespace
