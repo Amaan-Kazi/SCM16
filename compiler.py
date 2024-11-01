@@ -1,4 +1,5 @@
 from lark import Lark
+from compiler.visitor import ParseTreeVisitor
 
 # Load the grammar from a .lark file
 with open('grammar.lark') as f:
@@ -16,3 +17,12 @@ with open(f"SCMCODE/{str(scmCodeFile)}.scmcode", "r") as file:
 # Parse the code
 parseTree = parser.parse(scmCode)
 print(parseTree.pretty())
+
+print("----------------------------")
+
+# Create a visitor and visit the parse tree
+visitor = ParseTreeVisitor()
+visitor.visit(parseTree)  # Traverse the parse tree
+generated_code = visitor.generate_code()  # Get the generated code
+print("Generated Code:")
+print(generated_code)
