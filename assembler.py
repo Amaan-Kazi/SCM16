@@ -60,8 +60,8 @@ def validateOpcode(tokens):
 
 def validateRegister(tokens):
     reg_number = tokens[0][1:]  # Get the number part after 'R'
-    if (not reg_number.isdigit()) or (int(reg_number) < 0) or (int(reg_number) > 11):
-        raise ValueError(f"Invalid register: {tokens[0]}. Valid registers are R0 to R11")
+    if (not reg_number.isdigit()) or (int(reg_number) < 0) or (int(reg_number) > 15):
+        raise ValueError(f"Invalid register: {tokens[0]}. Valid registers are R0 to R15")
     return ("Register", reg_number)
 
 def validateImmediate(tokens):

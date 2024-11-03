@@ -16,3 +16,6 @@ ADDI 2 1 2       #   R2++
 BLTUI 2 64 loop2 # } while (R2 < 64)
 
 HALT
+
+# check ASCII and ignore <, > than
+# in hardware
