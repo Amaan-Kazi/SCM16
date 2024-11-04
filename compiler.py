@@ -1,5 +1,5 @@
 from lark import Lark
-from compiler.visitor import ParseTreeVisitor
+from compiler.codegenerator import CodeGenerator
 
 # Load the grammar from a .lark file
 with open('grammar.lark') as f:
@@ -21,7 +21,7 @@ print(parseTree.pretty())
 print("----------------------------")
 
 # Create a visitor and visit the parse tree
-visitor = ParseTreeVisitor()
+visitor = CodeGenerator()
 visitor.visit(parseTree)  # Traverse the parse tree
 generated_code = visitor.generate_code()  # Get the generated code
 print("Generated Code:")

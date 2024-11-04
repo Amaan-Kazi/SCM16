@@ -1,6 +1,6 @@
 from lark import Visitor
 
-class ParseTreeVisitor(Visitor):
+class CodeGenerator(Visitor):
     def __init__(self):
         self.output = []  # Store the generated code lines
 
