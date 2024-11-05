@@ -1,0 +1,45 @@
+int a = 20;
+int b = 20;
+string abc = "abc";
+
+int array[5][1+2] = {
+    {
+        {1, 2, 3}
+    },
+    {
+        {4, 5, 6}
+    }
+};
+
+int arr[10] = {1, 2, 25, -8};
+
+int func (int x)
+{
+    x = x + 25;
+    z = array[x][2+5];
+    array[12 / x] = 200 - x;
+    return 1;
+}
+
+if (a != 20)
+{
+    a = 30;
+}
+else
+{
+    b = 30;
+}
+
+for (int i = 0; i < 10; i = i+1)
+{
+    a = a + i;
+}
+
+while (i < n)
+{
+    a = a + 5;
+}
+
+// int a = 10;
+// int b = -30000;
+// int c = a + b; // works
