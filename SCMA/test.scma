@@ -1,11 +1,55 @@
-# This program will test a few instructions
 
-ISHRI 32 1 R5
+# int a = R0
+ISTORE 65534 R0 0
 
-@loop: MULI R1 3 R2
-ADDI R1 1 R1 # R1++
-BGTUI R1 5 @end # if R1 > 5 jump to @end
-JMP R0 R0 @loop
+# R6 = 25
+IADDI 25 0 R6
 
-@end: SHLI R5 1 R4
+# a = R6
+ISTORE 65534 R6 0
+
+# R6 = 12
+IADDI 12 0 R6
+
+# R7 = a
+ILOADI 65534 0 R7
+
+# R6 = R6 + R7
+ADD R6 R7 R6
+
+# R7 = 6
+IADDI 6 0 R7
+
+# R6 = R6 + R7
+ADD R6 R7 R6
+
+# int x = R6
+ISTORE 65533 R6 0
+
+# R6 = a
+ILOADI 65534 0 R6
+
+# R7 = 4
+IADDI 4 0 R7
+
+# R6 = R6 + R7
+ADD R6 R7 R6
+
+# x = R6
+ISTORE 65533 R6 0
+
+# R6 = x
+ILOADI 65533 0 R6
+
+# R7 = a
+ILOADI 65534 0 R7
+
+# R6 = R6 + R7
+ADD R6 R7 R6
+
+# int result = R6
+ISTORE 65532 R6 0
+
+ILOADI 65532 0 R15
+
 HALT 0 0 0

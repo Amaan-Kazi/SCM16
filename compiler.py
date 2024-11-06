@@ -2,8 +2,8 @@ from lark import Lark
 from compiler.codegenerator import CodeGenerator
 
 # Load the grammar from a .lark file
-with open('grammar.lark') as f:
-    grammar = f.read()
+with open('grammar.lark') as file:
+    grammar = file.read()
 
 # Create the parser
 parser = Lark(grammar)
@@ -27,5 +27,8 @@ visitor.transform(parseTree)  # Traverse the parse tree
 generated_code = visitor.generate_code()  # Get the generated code
 print("Generated Code:")
 print(generated_code)
+
+with open(f"SCMA/{str(scmCodeFile)}.scma", "w") as file:
+    file.write(generated_code)
 
 print("\n--- Compiled Succesfully ---\n")

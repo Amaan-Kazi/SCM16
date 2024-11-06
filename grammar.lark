@@ -54,10 +54,10 @@ block: "{" statement* "}" // {}
      | expr "%"  expr -> modulus
      | "(" expr ")"   // parenthesis for grouping
      | NAME array_access
-     | NAME
-     | NUMBER
-     | BOOLEAN
-     | STRING
+     | NAME    -> var
+     | NUMBER  -> num
+     | BOOLEAN -> bool
+     | STRING  -> str
      | func_call
 
 
