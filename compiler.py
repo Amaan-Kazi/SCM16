@@ -22,7 +22,8 @@ print("----------------------------")
 
 # Create a visitor and visit the parse tree
 visitor = CodeGenerator()
-visitor.visit(parseTree)  # Traverse the parse tree
+visitor.transform(parseTree)  # Traverse the parse tree
+
 generated_code = visitor.generate_code()  # Get the generated code
 print("Generated Code:")
 print(generated_code)

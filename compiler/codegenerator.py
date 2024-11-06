@@ -1,34 +1,43 @@
-from lark import Visitor
+from lark import Transformer
 
-class CodeGenerator(Visitor):
+class CodeGenerator(Transformer):
     def __init__(self):
-        self.output = []  # Store the generated code lines
+        self.output = []      # Store the generated code lines
+        self.symbolTable = {} # Stores variables and their addresses
 
         self.stackPointer = "R1"
         self.basePointer = "R2"
         self.heapPointer = "R3"
-        self.addrRegister = "R15"
+        self.addressRegister = "R15"
 
         self.output.append(f"\n# Initialize Stack Pointer")
         self.output.append(f"ADDI R0 65535 {self.stackPointer}")
 
     def var_decl(self, node):
-        data_type = node.children[0]
-        var_name = node.children[1]
+        data_type = node[0]
+        var_name = node[1]
         initial_value =  0
 
         # int a = 5 (initial value = 5) | int a (initial value = 0)
-        if len(node.children) > 2:
-            initial_value = int(node.children[2])
+        if len(node) > 2:
+            initial_value = int(node[2])
 
         # Comment in assembly
         self.output.append(f"\n# {data_type} {var_name} = {initial_value}")
         # Decrement Stack Pointer (grows downwards)
         self.output.append(f"SUBI {self.stackPointer} 1 {self.stackPointer}")
+        self.symbolTable[var_name] = self.stackPointer
         # Address Register = Stack Pointer
-        self.output.append(f"ADDI {self.stackPointer} 0 {self.addrRegister}")
+        self.output.append(f"ADDI {self.stackPointer} 0 {self.addressRegister}")
         # Store initial value on address pointed by Address Register
-        self.output.append(f"STORE {self.addrRegister} {initial_value} 0")
+        self.output.append(f"STOREI {self.addressRegister} {initial_value} 0")
+
+    def assign_stmt(self, node):
+        var_name = node[0]
+        value = node[1]
+
+
+
 
     def generate_code(self):
         return "\n".join(self.output)
