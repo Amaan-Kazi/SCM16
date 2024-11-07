@@ -3,66 +3,83 @@ start: statement+
 statement: var_decl ";"
          | assign_stmt ";"
          | array_assign_stmt ";"
-         | expr_stmt ";"
+         | arithmetic_expr_stmt ";"
          | if_stmt
          | while_stmt
          | for_stmt
          | func_decl
          | return_stmt ";"
 
-var_decl: (TYPE NAME ("=" expr)?) | array_decl // int a | int a = 5
-assign_stmt: NAME "=" expr                     // a = 20
-expr_stmt: expr                                // for function calls like print(a);
+var_decl: (TYPE NAME ("=" arithmetic_expr)?) | array_decl // int a | int a = 5
+assign_stmt: NAME "=" arithmetic_expr                     // a = 20
+arithmetic_expr_stmt: arithmetic_expr                                // for function calls like print(a);
 
 
 // ARRAYS //
-array: TYPE NAME "[" expr "]" ("[" expr "]")*
+array: TYPE NAME "[" arithmetic_expr "]" ("[" arithmetic_expr "]")*
 array_decl: array ("=" array_init)?
 array_init: array_init_elements | ("{" (array_init_elements | array_init) "}" ("," "{" (array_init_elements | array_init) "}")*)
-array_init_elements: (expr ("," expr)*)
+array_init_elements: (arithmetic_expr ("," arithmetic_expr)*)
 
-array_access: "[" expr "]" ("[" expr "]")*
-array_assign_stmt: NAME array_access "=" expr 
+array_access: "[" arithmetic_expr "]" ("[" arithmetic_expr "]")*
+array_assign_stmt: NAME array_access "=" arithmetic_expr 
 
 
 // CONDITIONS & LOOPS //
-if_stmt: "if" "(" expr ")" block ("else" block)?                                 // if () {} optional(else {})
-while_stmt: "while" "(" expr ")" block                                           // while () {}
-for_stmt: "for" "(" (var_decl | assign_stmt) ";" expr? ";" assign_stmt ")" block // for () {}
+if_stmt: "if" "(" arithmetic_expr ")" block ("else" block)?                                 // if () {} optional(else {})
+while_stmt: "while" "(" arithmetic_expr ")" block                                           // while () {}
+for_stmt: "for" "(" (var_decl | assign_stmt) ";" arithmetic_expr? ";" assign_stmt ")" block // for () {}
 
 
 // FUNCTIONS //
 func_decl: TYPE NAME "(" param_list? ")" block // int func (int a, string b) {}
 param_list: (TYPE NAME) ("," TYPE NAME)*       // int a, string b
-return_stmt: "return" expr?                    // return func(a); | return a;
+return_stmt: "return" arithmetic_expr?                    // return func(a); | return a;
 
 
 block: "{" statement* "}" // {}
 
-?expr: expr "&&" expr -> and_op
-     | expr "||" expr -> or_op
-     | expr "==" expr -> eq_op
-     | expr "!=" expr -> neq_op
-     | expr "<"  expr -> lt_op
-     | expr ">"  expr -> gt_op
-     | expr "<=" expr -> leq_op
-     | expr ">=" expr -> geq_op
-     | expr "+"  expr -> add
-     | expr "-"  expr -> subtract
-     | expr "*"  expr -> multiply
-     | expr "/"  expr -> divide
-     | expr "%"  expr -> modulus
-     | "(" expr ")"   // parenthesis for grouping
-     | NAME array_access
+// ?expr: expr "&&" expr -> and_op
+//      | expr "||" expr -> or_op
+//      | expr "==" expr -> eq_op
+//      | expr "!=" expr -> neq_op
+//      | expr "<"  expr -> lt_op
+//      | expr ">"  expr -> gt_op
+//      | expr "<=" expr -> leq_op
+//      | expr ">=" expr -> geq_op
+//      | expr "+"  expr -> add
+//      | expr "-"  expr -> subtract
+//      | expr "*"  expr -> multiply
+//      | expr "/"  expr -> divide
+//      | expr "%"  expr -> modulus
+//      | "(" expr ")"   // parenthesis for grouping
+//      | NAME array_access
+//      | NAME    -> var
+//      | NUMBER  -> num
+//      | BOOLEAN -> bool
+//      | STRING  -> str
+//      | func_call
+
+arithmetic_expr: left_parenthesis* term right_parenthesis* left_parenthesis* ( arithmetic_operator left_parenthesis* term right_parenthesis* )*
+
+term: (NAME array_access)
      | NAME    -> var
      | NUMBER  -> num
      | BOOLEAN -> bool
-     | STRING  -> str
+     | STRING  -> str_literal
      | func_call
 
+arithmetic_operator: "+" -> add
+                   | "-" -> subtract
+                   | "*" -> multiply
+                   | "/" -> divide
+                   | "%" -> modulus
+
+left_parenthesis:  "("
+right_parenthesis: ")"
 
 func_call: NAME "(" arg_list? ")"
-arg_list: expr ("," expr)*
+arg_list: arithmetic_expr ("," arithmetic_expr)*
 
 
 TYPE: "int" | "bool" | "string"
