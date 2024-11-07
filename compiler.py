@@ -31,4 +31,5 @@ print(generated_code)
 with open(f"SCMA/{str(scmCodeFile)}.scma", "w") as file:
     file.write(generated_code)
 
+print(int((60 * 2) - (210 % (450 / 3))))
 print("\n--- Compiled Succesfully ---\n")

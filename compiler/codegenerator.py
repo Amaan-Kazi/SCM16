@@ -1,14 +1,18 @@
 from lark import Transformer
 
+# TODO: Convert to postfix notation using recursion and stack to use only 3 registers
+
 class CodeGenerator(Transformer):
     def __init__(self):
         self.output = []      # Store the generated code lines
         self.symbolTable = {} # Stores variables and their addresses
 
-        self.exprRegisters = ["R9", "R8", "R7", "R6"]
+        self.exprRegisters = ["R9", "R8", "R7", "R6", "R5"]
 
         self.stackPointer = 65535
 
+
+    ## Types ##
     def var(self, node):
         register = self.exprRegisters.pop()
         var_name = node[0]
@@ -29,7 +33,9 @@ class CodeGenerator(Transformer):
         self.output.append(f"\n# {register} = {value}")
         self.output.append(f"IADDI {value} 0 {register}")
         return register
-    
+
+
+    ## Arithmetic ##
     def add(self, node):
         if len(node) < 2:
             raise ValueError(f"Expressions require 2 operands {node}")
@@ -46,6 +52,75 @@ class CodeGenerator(Transformer):
         self.output.append(f"ADD {register1} {register2} {destRegister}")
         
         return destRegister
+    
+    def subtract(self, node):
+        if len(node) < 2:
+            raise ValueError(f"Expressions require 2 operands {node}")
+        
+        register1 = node[0]
+        register2 = node[1]
+
+        self.exprRegisters.append(register2)
+        self.exprRegisters.append(register1)
+
+        destRegister = self.exprRegisters.pop()
+
+        self.output.append(f"\n# {destRegister} = {register1} - {register2}")
+        self.output.append(f"SUB {register1} {register2} {destRegister}")
+        
+        return destRegister
+
+    def multiply(self, node):
+        if len(node) < 2:
+            raise ValueError(f"Expressions require 2 operands {node}")
+        
+        register1 = node[0]
+        register2 = node[1]
+
+        self.exprRegisters.append(register2)
+        self.exprRegisters.append(register1)
+
+        destRegister = self.exprRegisters.pop()
+
+        self.output.append(f"\n# {destRegister} = {register1} * {register2}")
+        self.output.append(f"MUL {register1} {register2} {destRegister}")
+        
+        return destRegister
+
+    def divide(self, node):
+        if len(node) < 2:
+            raise ValueError(f"Expressions require 2 operands {node}")
+        
+        register1 = node[0]
+        register2 = node[1]
+
+        self.exprRegisters.append(register2)
+        self.exprRegisters.append(register1)
+
+        destRegister = self.exprRegisters.pop()
+
+        self.output.append(f"\n# {destRegister} = {register1} / {register2}")
+        self.output.append(f"DIV {register1} {register2} {destRegister}")
+        
+        return destRegister
+
+    def modulus(self, node):
+        if len(node) < 2:
+            raise ValueError(f"Expressions require 2 operands {node}")
+        
+        register1 = node[0]
+        register2 = node[1]
+
+        self.exprRegisters.append(register2)
+        self.exprRegisters.append(register1)
+
+        destRegister = self.exprRegisters.pop()
+
+        self.output.append(f"\n# {destRegister} = {register1} % {register2}")
+        self.output.append(f"MOD {register1} {register2} {destRegister}")
+        
+        return destRegister
+
 
     def var_decl(self, node):
         
@@ -85,6 +160,7 @@ class CodeGenerator(Transformer):
         self.output.append(f"ISTORE {var_address} {valueRegister} 0")
 
         self.exprRegisters.append(valueRegister)        
+
 
     def generate_code(self):
         # DEBUG: Requires result variable to be declared in code | Displays value of result on R15
