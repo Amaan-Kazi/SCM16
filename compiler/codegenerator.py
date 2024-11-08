@@ -1,7 +1,5 @@
 from lark import Transformer
 
-# TODO: Convert to postfix notation using recursion and stack to use only 3 registers
-
 class CodeGenerator(Transformer):
     def __init__(self):
         self.output = []      # Store the generated code lines
@@ -11,7 +9,78 @@ class CodeGenerator(Transformer):
 
         self.stackPointer = 65535
 
+    def num(self, node):
+        return ('num', int(node[0]))
+    def var(self, node):
+        return ('var', str(node[0]))
 
+    def infix_to_postfix(self, expression):
+        precedence = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2}
+        associativity = {'+': 'L', '-': 'L', '*': 'L', '/': 'L', '%': 'L'}
+        operations = {"add":"+", "subtract":"-", "multiply":"*", "divide":"/", "modulus":"%"}
+        output = []
+        operators = []
+
+        for token in expression:
+            if isinstance(token, tuple):
+                tokenType, tokenValue = token
+
+                if tokenType == "num":
+                    output.append(token)
+                elif tokenType == "var":
+                    output.append(token)
+            else:
+                if token.data == "left_parenthesis":
+                    # start of sub expression
+                    operators.append("(")
+                elif token.data == "right_parenthesis":
+                    # end of sub expression
+                    # while operators stack not empty and last operator not (
+                    while operators and operators[-1] != "(":
+                        output.append( ("operator", operators.pop()) )
+                    operators.pop() # pop ( from stack
+                else:
+                    tokenData = operations[token.data]
+
+                    while (operators and operators[-1] in precedence and
+                        (associativity[tokenData] == 'L' and precedence[tokenData] <= precedence[operators[-1]] or
+                        associativity[tokenData] == 'R' and precedence[tokenData] < precedence[operators[-1]])):
+                        output.append( ("operator", operators.pop()) )
+                    operators.append(tokenData)
+        
+        while operators:
+            output.append( ("operator", operators.pop()) )
+
+        return output
+        """
+        for token in expression:
+            if token.isdigit():  # If the token is an operand (number)
+                output.append(token)
+            elif token == '(':  # Left parenthesis
+                operators.append(token)
+            elif token == ')':  # Right parenthesis
+                while operators and operators[-1] != '(':
+                    output.append(operators.pop())
+                operators.pop()  # Pop the '(' from the stack
+            else:  # Operator
+                while (operators and operators[-1] in precedence and
+                    (associativity[token] == 'L' and precedence[token] <= precedence[operators[-1]] or
+                        associativity[token] == 'R' and precedence[token] < precedence[operators[-1]])):
+                    output.append(operators.pop())
+                operators.append(token)
+
+        while operators:
+            output.append(operators.pop())
+
+        return output
+        """
+
+
+    def arithmetic_expr(self, node):
+        print(self.infix_to_postfix(node))
+
+
+    """
     ## Types ##
     def var(self, node):
         register = self.exprRegisters.pop()
@@ -160,7 +229,7 @@ class CodeGenerator(Transformer):
         self.output.append(f"ISTORE {var_address} {valueRegister} 0")
 
         self.exprRegisters.append(valueRegister)        
-
+    """
 
     def generate_code(self):
         # DEBUG: Requires result variable to be declared in code | Displays value of result on R15
