@@ -51,7 +51,6 @@ class CodeGenerator(Transformer):
 
     def arithmetic_expr(self, node):
         postfix_expr = self.infix_to_postfix(node)
-        print(postfix_expr)
 
         resultRegister = self.exprRegisters.pop()
         expressionBasePointer = self.stackPointer
