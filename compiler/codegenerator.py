@@ -113,18 +113,33 @@ class CodeGenerator(Transformer):
                     self.exprRegisters.append(register2)
                     self.exprRegisters.append(register1)
 
-        if not expressionBasePointer == self.stackPointer + 1:
-            raise SyntaxError("ERROR: Invalid Arithmetic Expression")
-
         self.output.append(f"\n# {resultRegister} = [{self.stackPointer}]")
         self.output.append(f"ILOADI {self.stackPointer} 0 {resultRegister}")
         self.output.append(f"\n## EXPRESSION END ##")
         self.stackPointer = expressionBasePointer
         return ("register", str(resultRegister))
 
+
+    def var_decl(self, node):
+        var_type = node[0]
+        var_name = node[1]
+
+        if (isinstance(node[2], tuple)) and (node[2][0] == "register"):
+            register = node[2][1]
+            self.stackPointer -= 1
+            self.symbolTable[var_name] = self.stackPointer
+
+            self.output.append(f"\n# {var_type} {var_name} = {register}")
+            self.output.append(f"ISTORE {self.stackPointer} {register} 0")
+            self.exprRegisters.append(register)
+        else:
+            raise MemoryError("ERROR: registernot found for var_decl")
+
+
     def generate_code(self):
         # DEBUG: Requires result variable to be declared in code | Displays value of result on R15
-        # self.output.append(f"\nILOADI {self.symbolTable["result"]} 0 R15")
+        #self.output.append(f"\n# DEBUG: Load variable result into R15")
+        #self.output.append(f"ILOADI {self.symbolTable["result"]} 0 R15")
 
         self.output.append("\nHALT 0 0 0\n") # End of program
         return "\n".join(self.output)

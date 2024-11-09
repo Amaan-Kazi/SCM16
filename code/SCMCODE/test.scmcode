@@ -1,7 +1,4 @@
-//int a;
-//a = 25 + 12 + 3;
+int a = 25 + 12 + 3;
+int x = a + (60 * 2) - (210 % (450 / 3));
 
-//int x = (12 + a) + 6;
-int x = 40 + (60 * 2) - (210 % (450 / 3));
-
-//int result = x + a; // Should result in 100
+int result = x; // Should result in 100
