@@ -58,11 +58,11 @@ class CodeGenerator(Transformer):
         self.output.append(f"\n## EXPRESSION START ##")
 
         if len(postfix_expr) == 1:
-            if postfix_expr[0] == "num":
-                self.output.append(f"\n# {resultRegister} = {int(postfix_expr[1])}")
-                self.output.append(f"IADDI 0 {int(postfix_expr[1])} {resultRegister}")
-            elif postfix_expr[0] == "var":
-                var_name = str(postfix_expr[1])
+            if postfix_expr[0][0] == "num":
+                self.output.append(f"\n# {resultRegister} = {int(postfix_expr[0][1])}")
+                self.output.append(f"IADDI 0 {int(postfix_expr[0][1])} {resultRegister}")
+            elif postfix_expr[0][0] == "var":
+                var_name = str(postfix_expr[0][1])
                 if not(var_name in self.symbolTable):
                     raise ValueError(f"ERROR: Variable {var_name} is not declared")
                 else:
@@ -113,33 +113,55 @@ class CodeGenerator(Transformer):
                     self.exprRegisters.append(register2)
                     self.exprRegisters.append(register1)
 
-        self.output.append(f"\n# {resultRegister} = [{self.stackPointer}]")
-        self.output.append(f"ILOADI {self.stackPointer} 0 {resultRegister}")
+            self.output.append(f"\n# {resultRegister} = [{self.stackPointer}]")
+            self.output.append(f"ILOADI {self.stackPointer} 0 {resultRegister}")
+        
         self.output.append(f"\n## EXPRESSION END ##")
         self.stackPointer = expressionBasePointer
         return ("register", str(resultRegister))
 
 
     def var_decl(self, node):
-        var_type = node[0]
-        var_name = node[1]
+        var_type = str(node[0])
+        var_name = str(node[1])
 
-        if (isinstance(node[2], tuple)) and (node[2][0] == "register"):
-            register = node[2][1]
+        # if no expression given, then value = 0
+        if len(node) > 2:
+            if (isinstance(node[2], tuple)) and (node[2][0] == "register"):
+                register = node[2][1]
+                self.stackPointer -= 1
+                self.symbolTable[var_name] = self.stackPointer
+
+                self.output.append(f"\n# {var_type} {var_name} = {register}")
+                self.output.append(f"ISTORE {self.stackPointer} {register} 0")
+                self.exprRegisters.append(register)
+            else:
+                raise MemoryError("ERROR: expression register not found for var_decl")
+        else:
             self.stackPointer -= 1
             self.symbolTable[var_name] = self.stackPointer
 
-            self.output.append(f"\n# {var_type} {var_name} = {register}")
-            self.output.append(f"ISTORE {self.stackPointer} {register} 0")
+            self.output.append(f"\n# {var_type} {var_name} = 0")
+            self.output.append(f"ISTOREI {self.stackPointer} 0 0")
+    
+    def assign_stmt(self, node):
+        var_name = str(node[0])
+
+        if (isinstance(node[1], tuple)) and (node[1][0] == "register"):
+            register = node[1][1]
+            var_address = self.symbolTable[var_name]
+
+            self.output.append(f"\n# {var_name} = {register}")
+            self.output.append(f"ISTORE {var_address} {register} 0")
             self.exprRegisters.append(register)
         else:
-            raise MemoryError("ERROR: registernot found for var_decl")
+            raise MemoryError("ERROR: expression register not found for var_decl")
 
 
     def generate_code(self):
         # DEBUG: Requires result variable to be declared in code | Displays value of result on R15
-        #self.output.append(f"\n# DEBUG: Load variable result into R15")
-        #self.output.append(f"ILOADI {self.symbolTable["result"]} 0 R15")
+        self.output.append(f"\n# DEBUG: Load variable result into R15")
+        self.output.append(f"ILOADI {self.symbolTable["result"]} 0 R15")
 
         self.output.append("\nHALT 0 0 0\n") # End of program
         return "\n".join(self.output)

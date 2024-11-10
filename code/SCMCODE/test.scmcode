@@ -1,4 +1,10 @@
-int a = 25 + 12 + 3;
+int a = 25 + 12 + 3 + 10;
+a = a - 10;
+
 int x = a + (60 * 2) - (210 % (450 / 3));
+int z;
+
+a = 5;
+z = a + x;
 
 int result = x; // Should result in 100
