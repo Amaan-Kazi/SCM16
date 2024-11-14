@@ -3,43 +3,43 @@ start: statement+
 statement: var_decl ";"
          | assign_stmt ";"
          | array_assign_stmt ";"
-         | arithmetic_expr_stmt ";"
+         | expression_stmt ";"
          | if_stmt
          | while_stmt
          | for_stmt
          | func_decl
          | return_stmt ";"
 
-var_decl: (TYPE NAME ("=" arithmetic_expr)?) | array_decl // int a | int a = 5
-assign_stmt: NAME "=" arithmetic_expr                     // a = 20
-arithmetic_expr_stmt: arithmetic_expr                                // for function calls like print(a);
+var_decl: (TYPE NAME ("=" expression)?) | array_decl // int a | int a = 5
+assign_stmt: NAME "=" expression                     // a = 20
+expression_stmt: expression                          // for function calls like print(a);
 
 
 // ARRAYS //
-array: TYPE NAME "[" arithmetic_expr "]" ("[" arithmetic_expr "]")*
+array: TYPE NAME "[" expression "]" ("[" expression "]")*
 array_decl: array ("=" array_init)?
 array_init: array_init_elements | ("{" (array_init_elements | array_init) "}" ("," "{" (array_init_elements | array_init) "}")*)
-array_init_elements: (arithmetic_expr ("," arithmetic_expr)*)
+array_init_elements: (expression ("," expression)*)
 
-array_access: "[" arithmetic_expr "]" ("[" arithmetic_expr "]")*
-array_assign_stmt: NAME array_access "=" arithmetic_expr 
+array_access: "[" expression "]" ("[" expression "]")*
+array_assign_stmt: NAME array_access "=" expression 
 
 
 // CONDITIONS & LOOPS //
-if_stmt: "if" "(" arithmetic_expr ")" block ("else" block)?                                 // if () {} optional(else {})
-while_stmt: "while" "(" arithmetic_expr ")" block                                           // while () {}
-for_stmt: "for" "(" (var_decl | assign_stmt) ";" arithmetic_expr? ";" assign_stmt ")" block // for () {}
+if_stmt: "if" "(" expression ")" block ("else" block)?                                 // if () {} optional(else {})
+while_stmt: "while" "(" expression ")" block                                           // while () {}
+for_stmt: "for" "(" (var_decl | assign_stmt) ";" expression? ";" assign_stmt ")" block // for () {}
 
 
 // FUNCTIONS //
 func_decl: TYPE NAME "(" param_list? ")" block // int func (int a, string b) {}
 param_list: (TYPE NAME) ("," TYPE NAME)*       // int a, string b
-return_stmt: "return" arithmetic_expr?                    // return func(a); | return a;
+return_stmt: "return" expression?              // return func(a); | return a;
 
 
 block: "{" statement* "}" // {}
 
-arithmetic_expr: left_parenthesis* term right_parenthesis* left_parenthesis* ( arithmetic_operator left_parenthesis* term right_parenthesis* )*
+expression: left_parenthesis* term right_parenthesis* left_parenthesis* ( operator left_parenthesis* term right_parenthesis* )*
 
 term: (NAME array_access)
      | NAME    -> var
@@ -48,17 +48,23 @@ term: (NAME array_access)
      | STRING  -> str_literal
      | func_call
 
-arithmetic_operator: "+" -> add
-                   | "-" -> subtract
-                   | "*" -> multiply
-                   | "/" -> divide
-                   | "%" -> modulus
+operator: "+"  -> add
+        | "-"  -> subtract
+        | "*"  -> multiply
+        | "/"  -> divide
+        | "%"  -> modulus
+        | "==" -> equal
+        | "!=" -> not_equal
+        | "<"  -> less_than
+        | "<=" -> less_than_or_equal
+        | ">"  -> greater_than
+        | ">=" -> greater_than_or_equal
 
 left_parenthesis:  "("
 right_parenthesis: ")"
 
 func_call: NAME "(" arg_list? ")"
-arg_list: arithmetic_expr ("," arithmetic_expr)*
+arg_list: expression ("," expression)*
 
 
 TYPE: "int" | "bool" | "string"

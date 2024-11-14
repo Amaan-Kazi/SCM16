@@ -15,9 +15,23 @@ class CodeGenerator(Transformer):
         return ('var', str(node[0]))
 
     def infix_to_postfix(self, expression):
-        precedence = {'+': 1, '-': 1, '*': 2, '/': 2, '%': 2}
-        associativity = {'+': 'L', '-': 'L', '*': 'L', '/': 'L', '%': 'L'}
-        operations = {"add":"+", "subtract":"-", "multiply":"*", "divide":"/", "modulus":"%"}
+        precedence = {
+            '+': 1, '-': 1, '*': 2, '/': 2, '%': 2,
+            '==': 3, '!=': 3, '<': 3, '<=': 3, '>': 3, '>=': 3
+        }
+        
+        associativity = {
+            '+': 'L', '-': 'L', '*': 'L', '/': 'L', '%': 'L',
+            '==': 'L', '!=': 'L', '<': 'L', '<=': 'L', '>': 'L', '>=': 'L'
+        }
+
+        operations = {
+            "add": "+", "subtract": "-", "multiply": "*", "divide": "/", "modulus": "%",
+            "equal": "==", "not_equal": "!=",
+            "less_than": "<", "less_than_or_equal": "<=",
+            "greater_than": ">", "greater_than_or_equal": ">="
+        }
+
         output = []
         operators = []
 
@@ -49,7 +63,7 @@ class CodeGenerator(Transformer):
         return output
 
 
-    def arithmetic_expr(self, node):
+    def expression(self, node):
         postfix_expr = self.infix_to_postfix(node)
 
         resultRegister = self.exprRegisters.pop()
@@ -98,7 +112,11 @@ class CodeGenerator(Transformer):
                     register2 = self.exprRegisters.pop()
                     tempRegister = self.exprRegisters.pop()
 
-                    operations = {"+":"ADD", "-":"SUB", "*":"MUL", "/":"DIV", "%":"MOD"}
+                    operations = {
+                        "+":"ADD", "-":"SUB", "*":"MUL", "/":"DIV", "%":"MOD",
+                        "==":"BEQ", "!=":"BNE", "<":"BLTU", "<=":"BLEU", ">":"BGTU", ">=":"BGEU"
+                    }
+
                     instruction = operations[tokenValue]
 
                     self.output.append(f"\n# [{self.stackPointer}] = [{self.stackPointer + 1}] {tokenValue} [{self.stackPointer}]")

@@ -7,4 +7,4 @@ int z;
 a = 5;
 z = a + x;
 
-int result = x; // Should result in 100
+int result = x * ((5 < 50)*2); // Should result in 100
