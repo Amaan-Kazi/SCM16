@@ -16,20 +16,30 @@ class CodeGenerator(Transformer):
 
     def infix_to_postfix(self, expression):
         precedence = {
-            '+': 1, '-': 1, '*': 2, '/': 2, '%': 2,
-            '==': 3, '!=': 3, '<': 3, '<=': 3, '>': 3, '>=': 3
+            '*':  3, '/':  3, '%': 3,
+            '+':  2, '-':  2,
+            '==': 1, '!=': 1,
+            '<':  1, '<=': 1,
+            '>':  1, '>=': 1,
+            '&&': 0, '||': 0
         }
         
         associativity = {
-            '+': 'L', '-': 'L', '*': 'L', '/': 'L', '%': 'L',
-            '==': 'L', '!=': 'L', '<': 'L', '<=': 'L', '>': 'L', '>=': 'L'
+            '*':  'L', '/':  'L', '%': 'L',
+            '+':  'L', '-':  'L',
+            '==': 'L', '!=': 'L',
+            '<':  'L', '<=': 'L',
+            '>':  'L', '>=': 'L',
+            '&&': 'L', '||': 'L'
         }
 
         operations = {
-            "add": "+", "subtract": "-", "multiply": "*", "divide": "/", "modulus": "%",
-            "equal": "==", "not_equal": "!=",
-            "less_than": "<", "less_than_or_equal": "<=",
-            "greater_than": ">", "greater_than_or_equal": ">="
+            "multiply":     "*", "divide":                "/", "modulus": "%",
+            "add":          "+", "subtract":              "-",
+            "equal":        "==", "not_equal":            "!=",
+            "less_than":    "<", "less_than_or_equal":    "<=",
+            "greater_than": ">", "greater_than_or_equal": ">=",
+            "logical_and":  "&&", "logical_or":           "||"
         }
 
         output = []
@@ -113,8 +123,12 @@ class CodeGenerator(Transformer):
                     tempRegister = self.exprRegisters.pop()
 
                     operations = {
-                        "+":"ADD", "-":"SUB", "*":"MUL", "/":"DIV", "%":"MOD",
-                        "==":"BEQ", "!=":"BNE", "<":"BLTU", "<=":"BLEU", ">":"BGTU", ">=":"BGEU"
+                        "*":  "MUL",  "/":  "DIV", "%":"MOD",
+                        "+":  "ADD",  "-":  "SUB",
+                        "==": "BEQ",  "!=": "BNE",
+                        "<":  "BLTU", "<=": "BLEU",
+                        ">":  "BGTU", ">=": "BGEU",
+                        "&&": "LAND", "||": "LOR"
                     }
 
                     instruction = operations[tokenValue]

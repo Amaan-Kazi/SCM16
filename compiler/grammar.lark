@@ -59,6 +59,9 @@ operator: "+"  -> add
         | "<=" -> less_than_or_equal
         | ">"  -> greater_than
         | ">=" -> greater_than_or_equal
+        | "&&" -> logical_and
+        | "||" -> logical_or
+        //| "!"  -> logical_not // unary operators currently not supported
 
 left_parenthesis:  "("
 right_parenthesis: ")"

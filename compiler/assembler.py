@@ -10,7 +10,8 @@ def Assemble(code:str):
     cond_opcodes = {
         'JMP': 0, 'BEQ':  1, 'BNE': 2,
         'BLT': 3, 'BLTU': 4, 'BLE': 5, 'BLEU': 6,
-        'BGT': 7, 'BGTU': 8, 'BGE': 9, 'BGEU': 10
+        'BGT': 7, 'BGTU': 8, 'BGE': 9, 'BGEU': 10,
+        'LAND': 11, 'LOR': 12, 'LNOT': 13
     }
 
     ram_opcodes = {
