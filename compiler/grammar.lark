@@ -39,27 +39,6 @@ return_stmt: "return" arithmetic_expr?                    // return func(a); | r
 
 block: "{" statement* "}" // {}
 
-// ?expr: expr "&&" expr -> and_op
-//      | expr "||" expr -> or_op
-//      | expr "==" expr -> eq_op
-//      | expr "!=" expr -> neq_op
-//      | expr "<"  expr -> lt_op
-//      | expr ">"  expr -> gt_op
-//      | expr "<=" expr -> leq_op
-//      | expr ">=" expr -> geq_op
-//      | expr "+"  expr -> add
-//      | expr "-"  expr -> subtract
-//      | expr "*"  expr -> multiply
-//      | expr "/"  expr -> divide
-//      | expr "%"  expr -> modulus
-//      | "(" expr ")"   // parenthesis for grouping
-//      | NAME array_access
-//      | NAME    -> var
-//      | NUMBER  -> num
-//      | BOOLEAN -> bool
-//      | STRING  -> str
-//      | func_call
-
 arithmetic_expr: left_parenthesis* term right_parenthesis* left_parenthesis* ( arithmetic_operator left_parenthesis* term right_parenthesis* )*
 
 term: (NAME array_access)

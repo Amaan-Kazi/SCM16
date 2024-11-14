@@ -2,6 +2,8 @@ from lark import Lark
 from compiler.codegenerator import CodeGenerator
 from compiler.assembler import Assemble
 
+# TODO: split SCMA and ASSEMBLY file by whitespace and color each word before printing
+# IDEA: to use return value from function within an expression, prepass with transformer on expression and split into 2 expressions, one - tempvar = func
 
 ## PARSER ##
 
