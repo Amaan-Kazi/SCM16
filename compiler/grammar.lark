@@ -26,10 +26,20 @@ array_assign_stmt: NAME array_access "=" expression
 
 
 // CONDITIONS & LOOPS //
-if_stmt: "if" "(" expression ")" block ("else" block)?                                 // if () {} optional(else {})
+if_stmt: "if" "(" if_condition ")" if_start statement* if_end  ("else if" "(" else_if_condition ")" else_if_start statement* else_if_end)*  ("else" else_start statement* else_end)?
 while_stmt: "while" "(" expression ")" block                                           // while () {}
 for_stmt: "for" "(" (var_decl | assign_stmt) ";" expression? ";" assign_stmt ")" block // for () {}
 
+if_condition: expression
+else_if_condition: expression
+
+if_start: "{"
+else_if_start: "{"
+else_start: "{"
+
+if_end: "}"
+else_if_end: "}"
+else_end: "}"
 
 // FUNCTIONS //
 func_decl: TYPE NAME "(" param_list? ")" block // int func (int a, string b) {}
@@ -55,8 +65,8 @@ operator: "+"  -> add
         | "%"  -> modulus
         | "==" -> equal
         | "!=" -> not_equal
-        | "<"  -> less_than
-        | "<=" -> less_than_or_equal
+        | "<"  -> lesser_than
+        | "<=" -> lesser_than_or_equal
         | ">"  -> greater_than
         | ">=" -> greater_than_or_equal
         | "&&" -> logical_and

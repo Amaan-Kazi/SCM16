@@ -2,12 +2,36 @@ from lark import Transformer
 
 class CodeGenerator(Transformer):
     def __init__(self):
-        self.output = []      # Store the generated code lines
-        self.symbolTable = {} # Stores variables and their addresses
+        self.output = []        # Store the generated code lines
+        self.symbolTable = [{}] # Stores variables and their addresses
 
         self.exprRegisters = ["R9", "R8", "R7", "R6"]
 
         self.stackPointer = 65535
+
+    def declare_variable(self, var_name: str, address: int):
+        current_scope = self.symbolTable[-1]
+        if var_name in current_scope:
+            raise ValueError(f"Variable {var_name} is already declared in this scope")
+        current_scope[var_name] = address
+
+    def get_variable_address(self, var_name: str) -> int:
+        for scope in reversed(self.symbolTable):  # Start from the innermost scope
+            if var_name in scope:
+                return scope[var_name]
+        raise ValueError(f"Variable {var_name} is not declared in any accessible scope")
+
+    def enter_scope(self):
+        # Push a new dictionary onto the stack to represent a new scope.
+        self.symbolTable.append({})
+
+    def exit_scope(self):
+        # Remove the top-most scope from the stack.
+        if len(self.symbolTable) > 1:  # Prevent removing the global scope
+            self.symbolTable.pop()
+        else:
+            raise ValueError("Cannot exit global scope")
+
 
     def num(self, node):
         return ('num', int(node[0]))
@@ -34,12 +58,12 @@ class CodeGenerator(Transformer):
         }
 
         operations = {
-            "multiply":     "*", "divide":                "/", "modulus": "%",
-            "add":          "+", "subtract":              "-",
-            "equal":        "==", "not_equal":            "!=",
-            "less_than":    "<", "less_than_or_equal":    "<=",
-            "greater_than": ">", "greater_than_or_equal": ">=",
-            "logical_and":  "&&", "logical_or":           "||"
+            "multiply":     "*",  "divide":                "/", "modulus": "%",
+            "add":          "+",  "subtract":              "-",
+            "equal":        "==", "not_equal":             "!=",
+            "lesser_than":  "<",  "lesser_than_or_equal":  "<=",
+            "greater_than": ">",  "greater_than_or_equal": ">=",
+            "logical_and":  "&&", "logical_or":            "||"
         }
 
         output = []
@@ -87,10 +111,7 @@ class CodeGenerator(Transformer):
                 self.output.append(f"IADDI 0 {int(postfix_expr[0][1])} {resultRegister}")
             elif postfix_expr[0][0] == "var":
                 var_name = str(postfix_expr[0][1])
-                if not(var_name in self.symbolTable):
-                    raise ValueError(f"ERROR: Variable {var_name} is not declared")
-                else:
-                    var_address = self.symbolTable[var_name]
+                var_address = self.get_variable_address(var_name)
                 
                 self.output.append(f"\n# {resultRegister} = {var_name}")
                 self.output.append(f"ILOADI {var_address} 0 {resultRegister}")
@@ -105,12 +126,9 @@ class CodeGenerator(Transformer):
                 elif tokenType == "var":
                     self.stackPointer -= 1
                     tempRegister = self.exprRegisters.pop()
-                    var_name = str(tokenValue)
 
-                    if not(var_name in self.symbolTable):
-                        raise ValueError(f"ERROR: Variable {var_name} is not declared")
-                    else:
-                        var_address = self.symbolTable[var_name]
+                    var_name = str(tokenValue)
+                    var_address = self.get_variable_address(var_name)
 
                     self.output.append(f"\n# [{self.stackPointer}] = {var_name}")
                     self.output.append(f"ILOADI {int(var_address)} 0 {tempRegister}")
@@ -162,7 +180,7 @@ class CodeGenerator(Transformer):
             if (isinstance(node[2], tuple)) and (node[2][0] == "register"):
                 register = node[2][1]
                 self.stackPointer -= 1
-                self.symbolTable[var_name] = self.stackPointer
+                self.declare_variable(var_name, self.stackPointer)
 
                 self.output.append(f"\n# {var_type} {var_name} = {register}")
                 self.output.append(f"ISTORE {self.stackPointer} {register} 0")
@@ -171,7 +189,7 @@ class CodeGenerator(Transformer):
                 raise MemoryError("ERROR: expression register not found for var_decl")
         else:
             self.stackPointer -= 1
-            self.symbolTable[var_name] = self.stackPointer
+            self.declare_variable(var_name, self.stackPointer)
 
             self.output.append(f"\n# {var_type} {var_name} = 0")
             self.output.append(f"ISTOREI {self.stackPointer} 0 0")
@@ -181,7 +199,7 @@ class CodeGenerator(Transformer):
 
         if (isinstance(node[1], tuple)) and (node[1][0] == "register"):
             register = node[1][1]
-            var_address = self.symbolTable[var_name]
+            var_address = self.get_variable_address(var_name)
 
             self.output.append(f"\n# {var_name} = {register}")
             self.output.append(f"ISTORE {var_address} {register} 0")
@@ -192,8 +210,10 @@ class CodeGenerator(Transformer):
 
     def generate_code(self):
         # DEBUG: Requires result variable to be declared in code | Displays value of result on R15
+        var_address = self.get_variable_address("result")
+
         self.output.append(f"\n# DEBUG: Load variable result into R15")
-        self.output.append(f"ILOADI {self.symbolTable["result"]} 0 R15")
+        self.output.append(f"ILOADI {var_address} 0 R15")
 
         self.output.append("\nHALT 0 0 0\n") # End of program
         return "\n".join(self.output)
