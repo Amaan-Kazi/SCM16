@@ -9,6 +9,9 @@ class CodeGenerator(Transformer):
 
         self.stackPointer = 65535
 
+        self.labels = []
+        self.highestLabel = 0
+
     def declare_variable(self, var_name: str, address: int):
         current_scope = self.symbolTable[-1]
         if var_name in current_scope:
@@ -206,6 +209,43 @@ class CodeGenerator(Transformer):
             self.exprRegisters.append(register)
         else:
             raise MemoryError("ERROR: expression register not found for var_decl")
+
+
+    def if_condition(self, node):
+        if (isinstance(node[0], tuple)) and (node[0][0] == "register"):
+            register = node[0][1]
+
+            self.output.append(f"\n # IF START")
+            self.output.append(f"LNOTI {register} 0 {register}")
+
+            # push 1 label for end of if block which can be continued by else if, else statements
+            # and push 1 label for end of entire if ladder
+            self.highestLabel += 1
+            self.labels.append(f"label{self.highestLabel}")
+            self.highestLabel += 1
+            self.labels.append(f"label{self.highestLabel}")
+
+            self.output.append(f"JMPI {register} 0 @{self.labels[-1]}")
+            self.exprRegisters.append(register)
+        else:
+            raise MemoryError("ERROR: expression register not found for if_condition")
+        
+    def if_start(self, node):
+        self.enter_scope()
+
+    def if_end(self, node):
+        label = self.labels.pop()
+
+        self.output.append(f"\n# IF END")
+        self.output.append(f"@{label}: IADDI 0 0 0") # dummy instruction due to how labels are assembled
+        self.exit_scope()
+
+
+    def if_stmt(self, node):
+        label = self.labels.pop()
+
+        self.output.append(f"\n# IF END STATEMENT")
+        self.output.append(f"@{label}: IADDI 0 0 0") # dummy instruction due to how labels are assembled
 
 
     def generate_code(self):
