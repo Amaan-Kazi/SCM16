@@ -1,29 +1,33 @@
 {
-    "scopeName": "custom.source.assembly",
-    "patterns": [
+	"patterns": [
         {
-            "name": "custom.word1.assembly",
-            "match": "^\\s*0[xX][0-9a-fA-F]+"
+            "comment": "Match Word 1 (first word on a line)",
+            "match": "^\\s*([a-zA-Z0-9_]+)",
+            "captures": {
+                "1": { "name": "keyword.control" }
+            }
         },
         {
-            "name": "custom.word2.assembly",
-            "match": "(?<=^\\s*0[xX][0-9a-fA-F]+\\s+)0[xX][0-9a-fA-F]+"
+            "comment": "Match Word 2 and Word 3",
+            "match": "(\\s+[a-zA-Z0-9_]+){2}",
+            "captures": {
+                "0": { "name": "variable.parameter" }
+            }
         },
         {
-            "name": "custom.word3.assembly",
-            "match": "(?<=^\\s*0[xX][0-9a-fA-F]+\\s+0[xX][0-9a-fA-F]+\\s+)0[xX][0-9a-fA-F]+"
-        },
+			"comment": "Match Word 4 (fourth word)",
+			"match": "^(\\s*\\S+\\s+\\S+\\s+\\S+\\s+)(\\S+)",
+			"captures": {
+				"2": {
+					"name": "support.variable"
+				}
+			}
+		},
         {
-            "name": "custom.word4.assembly",
-            "match": "(?<=\\s+)0[xX][0-9a-fA-F]+(?=\\s*#|\\s*$)"
-        },
-        {
-            "name": "custom.comment.assembly",
-            "match": "#.*"
+            "comment": "Match Comments (everything after #)",
+            "match": "#.*",
+            "name": "comment.line.number-sign"
         }
     ],
-    "repository": {},
-    "names": "assembly",
-    "fileTypes": ["assembly"],
-    "uuid": "00000000-0000-0000-0000-000000000000"
+	"scopeName": "source.assembly"
 }
