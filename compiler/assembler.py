@@ -72,13 +72,11 @@ def Assemble(code:str):
         return ("Immediate", tokens[0])
 
     def addLabel(tokens):
-        global labels
         labelName = str(tokens[0])
 
         return ("Label", labelName)
 
     def addPrePassLabel(tokens):
-        global labels
         labelName = str(tokens[0])
 
         if labelName in labels:
@@ -88,7 +86,6 @@ def Assemble(code:str):
         return ("Label", labelName)
 
     def validateLabel(tokens):
-        global labels
         labelName = str(tokens[0])
         return ("Label", labelName)
 
