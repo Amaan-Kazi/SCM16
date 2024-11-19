@@ -3,7 +3,8 @@
 	"displayName": "SCM16-Extension",
 	"description": "Languages Support for SCM16",
 	"publisher": "Amaan-Kazi",
-	"version": "0.0.2",
+	"version": "1.0.0",
+	"icon": "./icon.png",
 	"engines": {
 		"vscode": "^1.95.0"
 	},
@@ -16,13 +17,19 @@
 				"id": "assembly",
 				"aliases": ["ASSEMBLY", "assembly"],
 				"extensions": ["assembly"],
-				"configuration": "./assembly-language-configuration.json"
+				"configuration": "./language-configurations/assembly-language-configuration.json"
 			},
 			{
 				"id": "scma",
 				"aliases": ["SCMA", "scma"],
 				"extensions": ["scma"],
-				"configuration": "./scma-language-configuration.json"
+				"configuration": "./language-configurations/scma-language-configuration.json"
+			},
+			{
+				"id": "scmcode",
+				"aliases": ["SCMCODE", "scmcode"],
+				"extensions": ["scmcode"],
+				"configuration": "./language-configurations/scmcode-language-configuration.json"
 			}
 		],
 		"grammars": [
@@ -35,6 +42,11 @@
 				"language": "scma",
 				"scopeName": "source.scma",
 				"path": "./syntaxes/scma.tmLanguage.json"
+			},
+			{
+				"language": "scmcode",
+				"scopeName": "source.scmcode",
+				"path": "./syntaxes/scmcode.tmLanguage.json"
 			}
 		]
 	},

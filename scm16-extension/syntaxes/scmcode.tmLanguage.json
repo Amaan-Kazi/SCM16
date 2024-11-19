@@ -1,32 +1,76 @@
 {
-	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-	"name": "Assembly",
 	"patterns": [
 		{
 			"include": "#keywords"
 		},
 		{
+			"include": "#variables"
+		},
+		{
+			"include": "#literals"
+		},
+		{
 			"include": "#strings"
-		}
+		},
+		{
+            "comment": "Match Comments (everything after #)",
+            "match": "//.*",
+            "name": "comment.line.number-sign"
+        }
 	],
 	"repository": {
 		"keywords": {
-			"patterns": [{
-				"name": "keyword.control.assembly",
-				"match": "\\b(if|while|for|return)\\b"
-			}]
-		},
-		"strings": {
-			"name": "string.quoted.double.assembly",
-			"begin": "\"",
-			"end": "\"",
 			"patterns": [
 				{
-					"name": "constant.character.escape.assembly",
-					"match": "\\\\."
+					"name": "keyword.control",
+					"match": "\\b(if|else|while|for|return|import)\\b"
+				},
+				{
+					"name": "storage.type",
+					"match": "\\b(int|char|bool|string|void|true|false)\\b"
 				}
 			]
+		},
+		"variables": {
+			"patterns": [
+				{
+					"name": "variable.other",
+					"match": "\\b(?!if|else|while|for|return|import|int|char|bool|string|void|true|false)[a-zA-Z_][a-zA-Z0-9_]*\\b"
+				}
+			]
+		},
+		"literals": {
+			"patterns": [
+				{
+					"name": "constant.numeric",
+					"match": "\\b\\d+\\b"
+				}
+			]
+		},
+		"strings": {
+			"patterns": [{
+				"name": "string.quoted.double",
+				"begin": "\"",
+				"end": "\"",
+				"patterns": [
+					{
+						"name": "constant.character.escape",
+						"match": "\\\\."
+					}
+				]
+			},
+			{
+				"name": "string.quoted.single",
+				"begin": "'",
+				"end": "'",
+				"patterns": [
+					{
+						"name": "constant.character.escape",
+						"match": "\\\\."
+					}
+				]
+			}]
 		}
 	},
-	"scopeName": "source.assembly"
+	"scopeName": "source.scmcode"
 }

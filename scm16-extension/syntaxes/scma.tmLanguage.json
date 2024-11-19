@@ -1,29 +1,29 @@
 {
   "patterns": [
-    {
-      "match": "^@\\w+:",
-      "name": "variable.parameter.label.scma"
-    },
-    {
-      "match": "\\b[a-zA-Z]+\\b",
-      "name": "keyword.control.scma"
-    },
-    {
-      "match": "@[a-zA-Z_][a-zA-Z0-9_]*",
-      "name": "variable.parameter.label.scma"
-    },
-    {
-      "match": "\\bR\\d{1,2}\\b",
-      "name": "variable.language.register.scma"
-    },
-    {
-      "match": "\\b\\d+\\b",
-      "name": "constant.numeric.scma"
-    },
-    {
-      "match": "#.*",
-      "name": "comment.line.number-sign.scma"
-    }
-  ],
-  "scopeName": "source.scma"
+		{
+			"match": "^@\\w+:",
+			"name": "variable.parameter.label"
+		},
+		{
+			"match": "\\b[a-zA-Z]+\\b",
+			"name": "keyword.control"
+		},
+		{
+			"match": "@[a-zA-Z_][a-zA-Z0-9_]*",
+			"name": "variable.parameter.label"
+		},
+		{
+			"match": "\\bR\\d{1,2}\\b",
+			"name": "variable.language.register"
+		},
+		{
+			"match": "\\b\\d+\\b",
+			"name": "constant.numeric"
+		},
+		{
+			"match": "#.*",
+			"name": "comment.line.number-sign"
+		}
+  	],
+  	"scopeName": "source.scma"
 }
