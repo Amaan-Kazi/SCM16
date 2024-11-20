@@ -1,26 +1,29 @@
-int a = 25 + 12 + 3 + 10;
-a = a - 10;
+// int a = 25 + 12 + 3 + 10;
+// a = a - 10;
 
-int x = a + (60 * 2) - (210 % (450 / 3));
-int z;
+// int x = a + (60 * 2) - (210 % (450 / 3));
+// int z;
 
-a = 12;
-z = a + x;
+// a = 12;
+// z = a + x;
+int a = 3;
 
-
-// make sure else if, else run only when if is false
 if (a > 10)
 {
-    a = 2;
+    a = 20;
 }
-//else if (a > 5)
-//{
-    //a = 6;
-//}
+else if (a > 5)
+{
+    a = 30;
+}
+else if (a > 2)
+{
+    a = 40;
+}
 //else
 //{
     //a = 11;
 //}
 
-
-int result = (x * ((5 < 50 && 50 <= 5) + 2)) * a; // Should result in 400
+int result = 100 * a; // Should result in 4000
+// int result = (x * ((5 < 50 && 50 <= 5) + 2)) * a;

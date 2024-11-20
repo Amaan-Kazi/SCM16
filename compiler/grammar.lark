@@ -26,7 +26,7 @@ array_assign_stmt: NAME array_access "=" expression
 
 
 // CONDITIONS & LOOPS //
-if_stmt: "if" "(" if_condition ")" if_start statement* if_end  ("else if" "(" else_if_condition ")" else_if_start statement* else_if_end)*  ("else" else_start statement* else_end)?
+if_stmt: "if" "(" if_condition ")" if_start statement* if_end  ("else if" "(" else_if_condition ")" if_start statement* if_end)*  ("else" else_start statement* else_end)?
 while_stmt: "while" "(" expression ")" block                                           // while () {}
 for_stmt: "for" "(" (var_decl | assign_stmt) ";" expression? ";" assign_stmt ")" block // for () {}
 

@@ -215,7 +215,7 @@ class CodeGenerator(Transformer):
         if (isinstance(node[0], tuple)) and (node[0][0] == "register"):
             register = node[0][1]
 
-            self.output.append(f"\n # IF START")
+            self.output.append(f"\n# IF START")
             self.output.append(f"LNOTI {register} 0 {register}")
 
             # push 1 label for end of if block which can be continued by else if, else statements
@@ -230,6 +230,22 @@ class CodeGenerator(Transformer):
         else:
             raise MemoryError("ERROR: expression register not found for if_condition")
         
+    def else_if_condition(self, node):
+        if (isinstance(node[0], tuple)) and (node[0][0] == "register"):
+            register = node[0][1]
+
+            self.output.append(f"\n# IF START")
+            self.output.append(f"LNOTI {register} 0 {register}")
+
+            # push 1 label for end of else if block
+            self.highestLabel += 1
+            self.labels.append(f"label{self.highestLabel}")
+
+            self.output.append(f"JMPI {register} 0 @{self.labels[-1]}")
+            self.exprRegisters.append(register)
+        else:
+            raise MemoryError("ERROR: expression register not found for else_if_condition")
+        
     def if_start(self, node):
         self.enter_scope()
 
@@ -237,8 +253,12 @@ class CodeGenerator(Transformer):
         label = self.labels.pop()
 
         self.output.append(f"\n# IF END")
+        self.output.append(f"IJMPI 1 0 @{self.labels[-1]}")
         self.output.append(f"@{label}: IADDI 0 0 0") # dummy instruction due to how labels are assembled
         self.exit_scope()
+
+
+    #def if_else_condition(self, node):
 
 
     def if_stmt(self, node):
