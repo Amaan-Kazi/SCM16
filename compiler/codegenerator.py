@@ -234,7 +234,7 @@ class CodeGenerator(Transformer):
         if (isinstance(node[0], tuple)) and (node[0][0] == "register"):
             register = node[0][1]
 
-            self.output.append(f"\n# IF START")
+            self.output.append(f"\n# ELSE IF START")
             self.output.append(f"LNOTI {register} 0 {register}")
 
             # push 1 label for end of else if block
@@ -257,9 +257,9 @@ class CodeGenerator(Transformer):
         self.output.append(f"@{label}: IADDI 0 0 0") # dummy instruction due to how labels are assembled
         self.exit_scope()
 
-
-    #def if_else_condition(self, node):
-
+    def else_end(self, node):
+        self.output.append(f"\n# ELSE END")
+        self.exit_scope()
 
     def if_stmt(self, node):
         label = self.labels.pop()
