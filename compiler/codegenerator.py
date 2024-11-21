@@ -4,6 +4,7 @@ class CodeGenerator(Transformer):
     def __init__(self):
         self.output = []        # Store the generated code lines
         self.symbolTable = [{}] # Stores variables and their addresses
+        self.scopePointerStack = []
 
         self.exprRegisters = ["R9", "R8", "R7", "R6"]
 
@@ -12,6 +13,8 @@ class CodeGenerator(Transformer):
         self.labels = []
         self.highestLabel = 0
 
+
+    ## VARIABLES ##
     def declare_variable(self, var_name: str, address: int):
         current_scope = self.symbolTable[-1]
         if var_name in current_scope:
@@ -24,23 +27,29 @@ class CodeGenerator(Transformer):
                 return scope[var_name]
         raise ValueError(f"Variable {var_name} is not declared in any accessible scope")
 
+
+    ## SCOPES ##
     def enter_scope(self):
-        # Push a new dictionary onto the stack to represent a new scope.
-        self.symbolTable.append({})
+        self.scopePointerStack.append(int(self.stackPointer))
+        self.symbolTable.append({}) # Push a new dictionary onto the stack to represent a new scope.
 
     def exit_scope(self):
         # Remove the top-most scope from the stack.
         if len(self.symbolTable) > 1:  # Prevent removing the global scope
             self.symbolTable.pop()
+            self.stackPointer = self.scopePointerStack.pop()
         else:
             raise ValueError("Cannot exit global scope")
 
 
+    ## DATA TYPES AND LITERALS ##
     def num(self, node):
         return ('num', int(node[0]))
     def var(self, node):
         return ('var', str(node[0]))
 
+
+    ## EXPRESSIONS ##    
     def infix_to_postfix(self, expression):
         precedence = {
             '*':  3, '/':  3, '%': 3,
@@ -98,7 +107,6 @@ class CodeGenerator(Transformer):
             output.append( ("operator", operators.pop()) )
 
         return output
-
 
     def expression(self, node):
         postfix_expr = self.infix_to_postfix(node)
@@ -174,6 +182,7 @@ class CodeGenerator(Transformer):
         return ("register", str(resultRegister))
 
 
+    ## VARIABLES ##
     def var_decl(self, node):
         var_type = str(node[0])
         var_name = str(node[1])
