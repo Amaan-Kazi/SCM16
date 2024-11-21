@@ -25,10 +25,8 @@ array_access: "[" expression "]" ("[" expression "]")*
 array_assign_stmt: NAME array_access "=" expression 
 
 
-// CONDITIONS & LOOPS //
+// BRANCHING //
 if_stmt: "if" "(" if_condition ")" if_start statement* if_end  ("else if" "(" else_if_condition ")" if_start statement* if_end)*  ("else" if_start statement* else_end)?
-while_stmt: "while" "(" expression ")" block                                           // while () {}
-for_stmt: "for" "(" (var_decl | assign_stmt) ";" expression? ";" assign_stmt ")" block // for () {}
 
 if_condition: expression
 else_if_condition: expression
@@ -36,6 +34,18 @@ else_if_condition: expression
 if_start: "{"
 if_end: "}"
 else_end: "}"
+
+
+// WHILE LOOP //
+while_stmt: "while" while_condition_start while_condition ")" "{" statement* "}" // while () {}
+
+while_condition: expression
+while_condition_start: "("
+
+
+// FOR LOOP //
+for_stmt: "for" "(" (var_decl | assign_stmt) ";" expression? ";" assign_stmt ")" block // for () {}
+
 
 // FUNCTIONS //
 func_decl: TYPE NAME "(" param_list? ")" block // int func (int a, string b) {}

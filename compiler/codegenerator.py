@@ -211,6 +211,7 @@ class CodeGenerator(Transformer):
             raise MemoryError("ERROR: expression register not found for var_decl")
 
 
+    ## BRANCHING ##
     def if_condition(self, node):
         if (isinstance(node[0], tuple)) and (node[0][0] == "register"):
             register = node[0][1]
@@ -221,9 +222,9 @@ class CodeGenerator(Transformer):
             # push 1 label for end of if block which can be continued by else if, else statements
             # and push 1 label for end of entire if ladder
             self.highestLabel += 1
-            self.labels.append(f"label{self.highestLabel}")
+            self.labels.append(f"ifLabel{self.highestLabel}")
             self.highestLabel += 1
-            self.labels.append(f"label{self.highestLabel}")
+            self.labels.append(f"ifLabel{self.highestLabel}")
 
             self.output.append(f"JMPI {register} 0 @{self.labels[-1]}")
             self.exprRegisters.append(register)
@@ -239,7 +240,7 @@ class CodeGenerator(Transformer):
 
             # push 1 label for end of else if block
             self.highestLabel += 1
-            self.labels.append(f"label{self.highestLabel}")
+            self.labels.append(f"elseIfLabel{self.highestLabel}")
 
             self.output.append(f"JMPI {register} 0 @{self.labels[-1]}")
             self.exprRegisters.append(register)
@@ -266,6 +267,42 @@ class CodeGenerator(Transformer):
 
         self.output.append(f"\n# IF END STATEMENT")
         self.output.append(f"@{label}: IADDI 0 0 0") # dummy instruction due to how labels are assembled
+
+
+    ## WHILE LOOP ##
+    def while_condition_start(self, node):
+        # label to start of loop
+        self.highestLabel += 1
+        self.labels.append(f"whileLabel{self.highestLabel}")
+
+        # label to jump out of loop
+        self.highestLabel += 1
+        self.labels.append(f"whileLabel{self.highestLabel}")
+
+        self.output.append(f"\n## WHILE CONDITION ##")
+        self.output.append(f"@{self.labels[-2]}: IADDI 0 0 0")
+
+    def while_condition(self, node):
+        if (isinstance(node[0], tuple)) and (node[0][0] == "register"):
+            register = node[0][1]
+
+            self.output.append(f"\n## WHILE START ##")
+            self.output.append(f"LNOTI {register} 0 {register}")
+            self.output.append(f"JMPI {register} 0 @{self.labels[-1]}")
+            self.exprRegisters.append(register)
+
+            self.enter_scope()
+        else:
+            raise MemoryError("ERROR: expression register not found for while_condition")
+    
+    def while_stmt(self, node):
+        self.output.append(f"\n## WHILE END ##")
+        self.output.append(f"IJMPI 1 0 @{self.labels[-2]}") # always go back to start of loop
+        self.output.append(f"@{self.labels[-1]}: IADDI 0 0 0") # end of loop in case condition false
+
+        self.exit_scope()
+        self.labels.pop()
+        self.labels.pop()
 
 
     def generate_code(self):
