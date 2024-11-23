@@ -44,7 +44,13 @@ while_condition_start: "("
 
 
 // FOR LOOP //
-for_stmt: "for" "(" (var_decl | assign_stmt) ";" expression? ";" assign_stmt ")" block // for () {}
+for_stmt: "for" for_start (var_decl | assign_stmt) for_condition_start for_condition for_update_start assign_stmt for_update_end block // for () {}
+
+for_condition: expression
+for_start: "("
+for_condition_start: ";"
+for_update_start: ";"
+for_update_end: ")"
 
 
 // FUNCTIONS //

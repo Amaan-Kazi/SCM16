@@ -6,29 +6,36 @@
 
 // a = 12;
 // z = a + x;
-int a = 8;
+// int a = 1;
 
-if (a > 10)
-{
-    a = 20;
-}
-else if (a > 5)
-{
-    a = 30;
-}
-else if (a > 2)
-{
-    a = 40;
-}
-else
-{
-    a = 50;
-}
+// if (a > 10)
+// {
+//     a = 20;
+// }
+// else if (a > 5)
+// {
+//     a = 30;
+// }
+// else if (a > 2)
+// {
+//     a = 40;
+// }
+// else
+// {
+//     a = 50;
+// }
 
 // while ((a >= 5) && (a <= 100))
 // {
 //     a = a - 1;
 // }
+
+int a;
+
+for (int i = 0; i < 10; i = i + 1)
+{
+    a = a + i;
+}
 
 int result = 100 * a; // Should result in 400
 // int result = (x * ((5 < 50 && 50 <= 5) + 2)) * a;

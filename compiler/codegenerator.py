@@ -114,7 +114,7 @@ class CodeGenerator(Transformer):
         resultRegister = self.exprRegisters.pop()
         expressionBasePointer = self.stackPointer
 
-        self.output.append(f"\n## EXPRESSION START ##")
+        self.output.append(f"\n# EXPRESSION START #")
 
         if len(postfix_expr) == 1:
             if postfix_expr[0][0] == "num":
@@ -177,7 +177,7 @@ class CodeGenerator(Transformer):
             self.output.append(f"\n# {resultRegister} = [{self.stackPointer}]")
             self.output.append(f"ILOADI {self.stackPointer} 0 {resultRegister}")
         
-        self.output.append(f"\n## EXPRESSION END ##")
+        self.output.append(f"\n# EXPRESSION END #")
         self.stackPointer = expressionBasePointer
         return ("register", str(resultRegister))
 
@@ -225,7 +225,7 @@ class CodeGenerator(Transformer):
         if (isinstance(node[0], tuple)) and (node[0][0] == "register"):
             register = node[0][1]
 
-            self.output.append(f"\n# IF START")
+            self.output.append(f"\n## IF START ##")
             self.output.append(f"LNOTI {register} 0 {register}")
 
             # push 1 label for end of if block which can be continued by else if, else statements
@@ -244,7 +244,7 @@ class CodeGenerator(Transformer):
         if (isinstance(node[0], tuple)) and (node[0][0] == "register"):
             register = node[0][1]
 
-            self.output.append(f"\n# ELSE IF START")
+            self.output.append(f"\n## ELSE IF START ##")
             self.output.append(f"LNOTI {register} 0 {register}")
 
             # push 1 label for end of else if block
@@ -262,20 +262,18 @@ class CodeGenerator(Transformer):
     def if_end(self, node):
         label = self.labels.pop()
 
-        self.output.append(f"\n# IF END")
+        self.output.append(f"\n## IF END ##")
         self.output.append(f"IJMPI 1 0 @{self.labels[-1]}")
         self.output.append(f"@{label}: IADDI 0 0 0") # dummy instruction due to how labels are assembled
         self.exit_scope()
 
     def else_end(self, node):
-        self.output.append(f"\n# ELSE END")
+        self.output.append(f"\n## ELSE END ##")
         self.exit_scope()
 
     def if_stmt(self, node):
         label = self.labels.pop()
-
-        self.output.append(f"\n# IF END STATEMENT")
-        self.output.append(f"@{label}: IADDI 0 0 0") # dummy instruction due to how labels are assembled
+        self.output.append(f"\n@{label}: IADDI 0 0 0") # dummy instruction due to how labels are assembled
 
 
     ## WHILE LOOP ##
@@ -288,15 +286,14 @@ class CodeGenerator(Transformer):
         self.highestLabel += 1
         self.labels.append(f"whileLabel{self.highestLabel}")
 
-        self.output.append(f"\n## WHILE CONDITION ##")
+        self.output.append(f"\n## WHILE LOOP START ##")
         self.output.append(f"@{self.labels[-2]}: IADDI 0 0 0")
 
     def while_condition(self, node):
         if (isinstance(node[0], tuple)) and (node[0][0] == "register"):
             register = node[0][1]
 
-            self.output.append(f"\n## WHILE START ##")
-            self.output.append(f"LNOTI {register} 0 {register}")
+            self.output.append(f"\nLNOTI {register} 0 {register}")
             self.output.append(f"JMPI {register} 0 @{self.labels[-1]}")
             self.exprRegisters.append(register)
 
@@ -305,11 +302,62 @@ class CodeGenerator(Transformer):
             raise MemoryError("ERROR: expression register not found for while_condition")
     
     def while_stmt(self, node):
-        self.output.append(f"\n## WHILE END ##")
-        self.output.append(f"IJMPI 1 0 @{self.labels[-2]}") # always go back to start of loop
+        self.output.append(f"\nIJMPI 1 0 @{self.labels[-2]}") # always go back to start of loop
         self.output.append(f"@{self.labels[-1]}: IADDI 0 0 0") # end of loop in case condition false
+        self.output.append(f"\n## WHILE LOOP END ##")
 
         self.exit_scope()
+        self.labels.pop()
+        self.labels.pop()
+
+
+    ## FOR LOOP ##
+    def for_start(self, node):
+        self.enter_scope()
+    
+    def for_condition_start(self, node):
+        # start of loop condition
+        self.highestLabel += 1
+        self.labels.append(f"forLabel{self.highestLabel}")
+        self.highestLabel += 1
+        self.labels.append(f"forLabel{self.highestLabel}")
+        self.highestLabel += 1
+        self.labels.append(f"forLabel{self.highestLabel}")
+        self.highestLabel += 1
+        self.labels.append(f"forLabel{self.highestLabel}")
+
+        self.output.append(f"\n## FOR LOOP START ##")
+        self.output.append(f"@{self.labels[-4]}: IADDI 0 0 0")
+
+    def for_condition(self, node):
+        if (isinstance(node[0], tuple)) and (node[0][0] == "register"):
+            register = node[0][1]
+
+            self.output.append(f"\n# FOR LOOP CONDITION #")
+            self.output.append(f"LNOTI {register} 0 {register}")
+            self.output.append(f"JMPI {register} 0 @{self.labels[-1]}")
+            self.exprRegisters.append(register)
+        else:
+            raise MemoryError("ERROR: expression register not found for for_condition")
+        
+    def for_update_start(self, node):
+        # skip evaluating assign stmt first, then come back to it after loop block is evaluated
+        # at end of assign stmt evaluation, jmp back to the condition of loop
+        self.output.append(f"\nIJMPI 1 0 @{self.labels[-3]}")
+        self.output.append(f"@{self.labels[-2]}: IADDI 0 0 0")
+
+    def for_update_end(self, node):
+        self.output.append(f"\nIJMPI 1 0 @{self.labels[-4]}")
+        self.output.append(f"@{self.labels[-3]}: IADDI 0 0 0")
+
+    def for_stmt(self, node):
+        self.output.append(f"\nIJMPI 1 0 @{self.labels[-2]}")
+        self.output.append(f"@{self.labels[-1]}: IADDI 0 0 0")
+        self.output.append(f"\n## FOR END ##")
+
+        self.exit_scope()
+        self.labels.pop()
+        self.labels.pop()
         self.labels.pop()
         self.labels.pop()
 
