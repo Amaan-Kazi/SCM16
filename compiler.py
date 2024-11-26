@@ -33,9 +33,6 @@ generated_code = transformer.generate_code()
 print(f"Generated Code [code/SCMA/{str(scmCodeFile)}.scma]:")
 print(generated_code)
 
-with open(f"code/SCMA/{str(scmCodeFile)}.scma", "w") as file:
-    file.write(generated_code)
-
 print("\n--------------------------------------------------------")
 
 
@@ -47,5 +44,8 @@ print(assembled_code)
 
 with open(f"code/ASM/{str(scmCodeFile)}.assembly", "w") as file:
     file.write(assembled_code)
+
+with open(f"code/SCMA/{str(scmCodeFile)}.scma", "w") as file:
+    file.write(generated_code)
 
 print("\n--- Compiled Succesfully ---\n")

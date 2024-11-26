@@ -1,0 +1,11 @@
+// this program will give the sum of all even numbers from 1 to n
+int n = 10;
+int sum;
+
+for (int i = 1; i <= n; i = i + 1) {
+    if (i % 2 == 0) {
+        sum = sum + i;
+    }
+}
+
+int result = sum;
