@@ -6,20 +6,25 @@ class CodeGenerator(Transformer):
         self.symbolTable = [{}] # Stores variables and their addresses
         self.scopePointerStack = []
 
-        self.exprRegisters = ["R9", "R8", "R7", "R6"]
+        self.exprRegisters = ["R9", "R8", "R7", "R6", "R5", "R4"]
 
         self.stackPointer = 65535
 
         self.labels = []
         self.highestLabel = 0
 
+        #self.inFunctionScope = False
+        #self.functionScope = [{}]
+
 
     ## VARIABLES ##
     def declare_variable(self, var_name: str, address: int):
+        #if self.inFunctionScope == False:
         current_scope = self.symbolTable[-1]
         if var_name in current_scope:
             raise ValueError(f"Variable {var_name} is already declared in this scope")
         current_scope[var_name] = address
+        #else:
 
     def get_variable_address(self, var_name: str) -> int:
         for scope in reversed(self.symbolTable):  # Start from the innermost scope
@@ -360,6 +365,20 @@ class CodeGenerator(Transformer):
         self.labels.pop()
         self.labels.pop()
         self.labels.pop()
+
+    
+    ## DOT MATRIX DISPLAY FUNCTIONS ##
+    def putpixel(self, node):
+        if ((isinstance(node[0], tuple)) and (node[0][0] == "register") and (isinstance(node[1], tuple)) and (node[1][0] == "register")):
+            register1 = node[0][1]
+            register2 = node[1][1]
+
+            self.output.append(f"\n # PUT PIXEL")
+            self.output.append(f"PIXEL {register1} {register2} 0")
+            self.exprRegisters.append(register2)
+            self.exprRegisters.append(register1)
+        else:
+            raise MemoryError("ERROR: expression register not found for putpixel")
 
 
     def generate_code(self):
