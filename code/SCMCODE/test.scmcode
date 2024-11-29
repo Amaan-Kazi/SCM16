@@ -37,9 +37,15 @@
 //    a = a + i;
 //}
 
+color(0, 0, 0);
+fill();
+
 for (int i = 0; i < 64; i = i + 2)
 {
+    color(33, 209, 72);
     putpixel(20, i);
+
+    color(0, 238, 255);
     putpixel(21, i + 1);
 }
 

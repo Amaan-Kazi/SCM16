@@ -373,12 +373,34 @@ class CodeGenerator(Transformer):
             register1 = node[0][1]
             register2 = node[1][1]
 
-            self.output.append(f"\n # PUT PIXEL")
+            self.output.append(f"\n# PUT PIXEL")
             self.output.append(f"PIXEL {register1} {register2} 0")
+
             self.exprRegisters.append(register2)
             self.exprRegisters.append(register1)
         else:
             raise MemoryError("ERROR: expression register not found for putpixel")
+
+    def color(self, node):
+        if ((isinstance(node[0], tuple)) and (node[0][0] == "register") and (isinstance(node[1], tuple)) and (node[1][0] == "register") and (isinstance(node[2], tuple)) and (node[2][0] == "register")):
+            register1 = node[0][1]
+            register2 = node[1][1]
+            register3 = node[2][1]
+
+            self.output.append(f"\n# COLOR")
+            self.output.append(f"SHLI {register1} 8 {register1}")
+            self.output.append(f"ADD {register1} {register2} {register1}")
+            self.output.append(f"COLOR {register1} {register3} 0")
+            
+            self.exprRegisters.append(register3)
+            self.exprRegisters.append(register2)
+            self.exprRegisters.append(register1)
+        else:
+            raise MemoryError("ERROR: expression register not found for color")
+        
+    def fill(self, node):
+        self.output.append(f"\n# FILL")
+        self.output.append(f"IFILLI 0 0 0")
 
 
     def generate_code(self):
