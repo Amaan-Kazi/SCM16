@@ -10,6 +10,7 @@ statement: var_decl ";"
          | color ";"
          | putpixel ";"
          | fill ";"
+         | exit ";"
          | func_decl
          | return_stmt ";"
 
@@ -70,6 +71,9 @@ color: "color" "(" expression "," expression "," expression ")"
 fill: "fill" "(" ")"
 
 
+// UTILITY FUNCTIONS //
+exit: "exit" "(" ")"
+
 block: "{" statement* "}" // {}
 
 expression: left_parenthesis* term right_parenthesis* left_parenthesis* ( operator left_parenthesis* term right_parenthesis* )*
@@ -104,7 +108,7 @@ arg_list: expression ("," expression)*
 
 
 TYPE: "int" | "bool" | "string"
-NAME: /(?!color|putpixel|fill)[a-zA-Z_][a-zA-Z0-9_]*/
+NAME: /(?!color|putpixel|fill|exit|delay)[a-zA-Z_][a-zA-Z0-9_]*/
 NUMBER: /-?\d+/
 BOOLEAN: "true" | "false"
 STRING: /"[^"]*"/

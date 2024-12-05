@@ -403,6 +403,12 @@ class CodeGenerator(Transformer):
         self.output.append(f"IFILLI 0 0 0")
 
 
+    ## UTILITY FUNCTIONS ##
+    def exit(self, node):
+        self.output.append(f"\n# EXIT")
+        self.output.append(f"HALT 0 0 0")
+
+
     def generate_code(self):
         # DEBUG: Requires result variable to be declared in code | Displays value of result on R15
         var_address = self.get_variable_address("result")
