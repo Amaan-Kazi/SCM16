@@ -13,8 +13,34 @@ class CodeGenerator(Transformer):
         self.labels = []
         self.highestLabel = 0
 
+        self.indentLevel = 0
+        self.instructions = 0
+
         #self.inFunctionScope = False
         #self.functionScope = [{}]
+
+
+    def indent(self):
+        self.indentLevel += 1
+    def unindent(self):
+        self.indentLevel -= 1
+
+    def code(self, instruction: str):
+        indent = '\t' * self.indentLevel
+        label = ''
+
+        words = instruction.split()
+
+        if words[0].startswith('@'):
+            label = words.pop(0)
+
+        formatted_words = ' '.join([f"{word:<5}" for word in words[1:]])
+        self.output.append(f"{indent}{label} {words[0]:<7} {formatted_words}")
+        self.instructions =+ 1
+
+    def comment(self, comment: str):
+        indent = '\t' * self.indentLevel
+        self.output.append(f"{indent}{comment}")
 
 
     ## VARIABLES ##
