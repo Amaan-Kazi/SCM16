@@ -14,10 +14,12 @@ statement: var_decl ";"
          | func_decl
          | return_stmt ";"
 
-var_decl: (TYPE NAME ("=" expression)?) | array_decl // int a | int a = 5
-assign_stmt: NAME "=" expression                     // a = 20
+var_decl: (var_decl_start NAME ("=" expression)?) | array_decl // int a | int a = 5
+assign_stmt: assign_stmt_start "=" expression                     // a = 20
 expression_stmt: expression                          // for function calls like print(a);
 
+var_decl_start: TYPE
+assign_stmt_start: NAME
 
 // ARRAYS //
 array: TYPE NAME "[" expression "]" ("[" expression "]")*

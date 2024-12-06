@@ -238,13 +238,18 @@ class CodeGenerator(Transformer):
             self.code(f"ILOADI {self.stackPointer} 0 {resultRegister}")
         
         self.unindent()
-        self.comment(f"# END EXPRESSION [{resultRegister}]", newLine2=True)
+        self.comment(f"# END EXPRESSION [ {resultRegister} ]", newLine2=True)
 
         self.stackPointer = expressionBasePointer
         return ("register", str(resultRegister))
 
 
     ## VARIABLES ##
+    def var_decl_start(self, node):
+        self.comment(f"# VARIABLE DECLARATION:")
+        self.indent()
+        return str(node[0])
+
     def var_decl(self, node):
         var_type = str(node[0])
         var_name = str(node[1])
@@ -258,6 +263,9 @@ class CodeGenerator(Transformer):
 
                 self.comment(f"# {var_type} {var_name} = {register}")
                 self.code(f"ISTORE {self.stackPointer} {register} 0")
+                
+                self.unindent()
+                self.comment(f"# END VARIABLE DECLARATION [ {var_type} {var_name} = {register} ]", newLine2=True)
                 self.exprRegisters.append(register)
             else:
                 raise MemoryError("ERROR: expression register not found for var_decl")
@@ -267,7 +275,15 @@ class CodeGenerator(Transformer):
 
             self.comment(f"# {var_type} {var_name} = 0")
             self.code(f"ISTOREI {self.stackPointer} 0 0")
+            
+            self.unindent()
+            self.comment(f"# END VARIABLE DECLARATION [ {var_type} {var_name} = 0 ]", newLine2=True)
     
+    def assign_stmt_start(self, node):
+        self.comment(f"# ASSIGN STATEMENT:")
+        self.indent()
+        return str(node[0])
+
     def assign_stmt(self, node):
         var_name = str(node[0])
 
@@ -278,6 +294,9 @@ class CodeGenerator(Transformer):
             self.comment(f"# {var_name} = {register}")
             self.code(f"ISTORE {var_address} {register} 0")
             self.exprRegisters.append(register)
+
+            self.unindent()
+            self.comment(f"# END ASSIGN STATEMENT [ {var_name} = {register} ]", newLine2=True)
         else:
             raise MemoryError("ERROR: expression register not found for var_decl")
 
