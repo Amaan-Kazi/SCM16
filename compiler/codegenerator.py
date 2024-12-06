@@ -367,25 +367,40 @@ class CodeGenerator(Transformer):
         self.highestLabel += 1
         self.labels.append(f"whileLabel{self.highestLabel}")
 
-        self.comment(f"## WHILE LOOP START ##")
+        self.comment(f"# WHILE LOOP: ")
+        self.indent()
+        self.comment(f"# WHILE CONDITION: ")
+        self.indent()
+
         self.code(f"@{self.labels[-2]}: IADDI 0 0 0")
 
     def while_condition(self, node):
         if (isinstance(node[0], tuple)) and (node[0][0] == "register"):
             register = node[0][1]
 
-            self.code(f"\nLNOTI {register} 0 {register}")
+            self.comment(f"# if while condition false, jump out of loop")
+            self.code(f"LNOTI {register} 0 {register}")
             self.code(f"JMPI {register} 0 @{self.labels[-1]}")
             self.exprRegisters.append(register)
 
+            self.unindent()
+            self.comment(f"# END WHILE CONDITION", newLine2=True)
+
             self.enter_scope()
+            self.comment(f"# WHILE BODY: ")
+            self.indent()
         else:
             raise MemoryError("ERROR: expression register not found for while_condition")
     
     def while_stmt(self, node):
-        self.code(f"\nIJMPI 1 0 @{self.labels[-2]}") # always go back to start of loop
+        self.unindent()
+        self.comment(f"# END WHILE BODY", newLine2=True)
+
+        self.code(f"IJMPI 1 0 @{self.labels[-2]}") # always go back to start of loop
         self.code(f"@{self.labels[-1]}: IADDI 0 0 0") # end of loop in case condition false
-        self.comment(f"## WHILE LOOP END ##")
+
+        self.unindent()
+        self.comment(f"# END WHILE LOOP", newLine2=True)
 
         self.exit_scope()
         self.labels.pop()
