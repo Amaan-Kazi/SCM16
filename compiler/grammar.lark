@@ -68,9 +68,13 @@ func_start: "("
 
 
 // DOT MATRIX DISPLAY FUNCTIONS //
-putpixel: "putpixel" "(" expression "," expression ")"
-color: "color" "(" expression "," expression "," expression ")"
-fill: "fill" "(" ")"
+putpixel: "putpixel" putpixel_start expression "," expression ")"
+color: "color" color_start expression "," expression "," expression ")"
+fill: "fill" fill_start ")"
+
+putpixel_start: "("
+color_start: "("
+fill_start: "("
 
 
 // UTILITY FUNCTIONS //

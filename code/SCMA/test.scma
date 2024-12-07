@@ -1,24 +1,28 @@
-# EXPRESSION [ 0 ]: 
-	# R4 = 0
-	IADDI   0     0     R4   
-# END EXPRESSION [ R4 ]
+# COLOR(): 
+	# EXPRESSION [ 0 ]: 
+		# R4 = 0
+		IADDI   0     0     R4   
+	# END EXPRESSION [ R4 ]
 
-# EXPRESSION [ 0 ]: 
-	# R5 = 0
-	IADDI   0     0     R5   
-# END EXPRESSION [ R5 ]
+	# EXPRESSION [ 0 ]: 
+		# R5 = 0
+		IADDI   0     0     R5   
+	# END EXPRESSION [ R5 ]
 
-# EXPRESSION [ 0 ]: 
-	# R6 = 0
-	IADDI   0     0     R6   
-# END EXPRESSION [ R6 ]
+	# EXPRESSION [ 0 ]: 
+		# R6 = 0
+		IADDI   0     0     R6   
+	# END EXPRESSION [ R6 ]
 
-# COLOR
-SHLI    R4    8     R4   
-ADD     R4    R5    R4   
-COLOR   R4    R6    0    
-# FILL
+	# COLOR [ R4, R5, R6 ]
+	SHLI    R4    8     R4   
+	ADD     R4    R5    R4   
+	COLOR   R4    R6    0    
+# END COLOR()
+
+# FILL(): 
 IFILLI  0     0     0    
+
 # VARIABLE DECLARATION:
 	# EXPRESSION [ 0 ]: 
 		# R4 = 0
@@ -56,81 +60,93 @@ IFILLI  0     0     0
 	# END WHILE CONDITION
 
 	# WHILE BODY: 
-		# EXPRESSION [ 33 ]: 
-			# R4 = 33
-			IADDI   0     33    R4   
-		# END EXPRESSION [ R4 ]
+		# COLOR(): 
+			# EXPRESSION [ 33 ]: 
+				# R4 = 33
+				IADDI   0     33    R4   
+			# END EXPRESSION [ R4 ]
 
-		# EXPRESSION [ 209 ]: 
-			# R5 = 209
-			IADDI   0     209   R5   
-		# END EXPRESSION [ R5 ]
+			# EXPRESSION [ 209 ]: 
+				# R5 = 209
+				IADDI   0     209   R5   
+			# END EXPRESSION [ R5 ]
 
-		# EXPRESSION [ 72 ]: 
-			# R6 = 72
-			IADDI   0     72    R6   
-		# END EXPRESSION [ R6 ]
+			# EXPRESSION [ 72 ]: 
+				# R6 = 72
+				IADDI   0     72    R6   
+			# END EXPRESSION [ R6 ]
 
-		# COLOR
-		SHLI    R4    8     R4   
-		ADD     R4    R5    R4   
-		COLOR   R4    R6    0    
-		# EXPRESSION [ 20 ]: 
-			# R4 = 20
-			IADDI   0     20    R4   
-		# END EXPRESSION [ R4 ]
+			# COLOR [ R4, R5, R6 ]
+			SHLI    R4    8     R4   
+			ADD     R4    R5    R4   
+			COLOR   R4    R6    0    
+		# END COLOR()
 
-		# EXPRESSION [ i ]: 
-			# R5 = i
-			ILOADI  65534 0     R5   
-		# END EXPRESSION [ R5 ]
+		# PUTPIXEL(): 
+			# EXPRESSION [ 20 ]: 
+				# R4 = 20
+				IADDI   0     20    R4   
+			# END EXPRESSION [ R4 ]
 
-		# PUT PIXEL
-		PIXEL   R4    R5    0    
-		# EXPRESSION [ 0 ]: 
-			# R4 = 0
-			IADDI   0     0     R4   
-		# END EXPRESSION [ R4 ]
+			# EXPRESSION [ i ]: 
+				# R5 = i
+				ILOADI  65534 0     R5   
+			# END EXPRESSION [ R5 ]
 
-		# EXPRESSION [ 238 ]: 
-			# R5 = 238
-			IADDI   0     238   R5   
-		# END EXPRESSION [ R5 ]
+			# PUT PIXEL [ R4, R5 ]
+			PIXEL   R4    R5    0    
+		# END PUTPIXEL()
 
-		# EXPRESSION [ 255 ]: 
-			# R6 = 255
-			IADDI   0     255   R6   
-		# END EXPRESSION [ R6 ]
+		# COLOR(): 
+			# EXPRESSION [ 0 ]: 
+				# R4 = 0
+				IADDI   0     0     R4   
+			# END EXPRESSION [ R4 ]
 
-		# COLOR
-		SHLI    R4    8     R4   
-		ADD     R4    R5    R4   
-		COLOR   R4    R6    0    
-		# EXPRESSION [ 21 ]: 
-			# R4 = 21
-			IADDI   0     21    R4   
-		# END EXPRESSION [ R4 ]
+			# EXPRESSION [ 238 ]: 
+				# R5 = 238
+				IADDI   0     238   R5   
+			# END EXPRESSION [ R5 ]
 
-		# EXPRESSION [ i + 1 ]: 
-			# [65533] = i
-			ILOADI  65534 0     R6   
-			ISTORE  65533 R6    0    
+			# EXPRESSION [ 255 ]: 
+				# R6 = 255
+				IADDI   0     255   R6   
+			# END EXPRESSION [ R6 ]
 
-			# [65532] = 1
-			ISTOREI 65532 1     0    
+			# COLOR [ R4, R5, R6 ]
+			SHLI    R4    8     R4   
+			ADD     R4    R5    R4   
+			COLOR   R4    R6    0    
+		# END COLOR()
 
-			# [65532] = [65533] + [65532]
-			ILOADI  65532 0     R7   
-			ILOADI  65533 0     R6   
-			ADD     R6    R7    R8   
-			ISTORE  65533 R8    0    
+		# PUTPIXEL(): 
+			# EXPRESSION [ 21 ]: 
+				# R4 = 21
+				IADDI   0     21    R4   
+			# END EXPRESSION [ R4 ]
 
-			# R5 = [65533]
-			ILOADI  65533 0     R5   
-		# END EXPRESSION [ R5 ]
+			# EXPRESSION [ i + 1 ]: 
+				# [65533] = i
+				ILOADI  65534 0     R6   
+				ISTORE  65533 R6    0    
 
-		# PUT PIXEL
-		PIXEL   R4    R5    0    
+				# [65532] = 1
+				ISTOREI 65532 1     0    
+
+				# [65532] = [65533] + [65532]
+				ILOADI  65532 0     R7   
+				ILOADI  65533 0     R6   
+				ADD     R6    R7    R8   
+				ISTORE  65533 R8    0    
+
+				# R5 = [65533]
+				ILOADI  65533 0     R5   
+			# END EXPRESSION [ R5 ]
+
+			# PUT PIXEL [ R4, R5 ]
+			PIXEL   R4    R5    0    
+		# END PUTPIXEL()
+
 		# ASSIGN STATEMENT:
 			# EXPRESSION [ i + 2 ]: 
 				# [65533] = i
