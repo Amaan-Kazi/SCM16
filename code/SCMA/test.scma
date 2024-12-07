@@ -23,19 +23,22 @@
 # FILL(): 
 IFILLI  0     0     0    
 
-# VARIABLE DECLARATION:
-	# EXPRESSION [ 0 ]: 
-		# R4 = 0
-		IADDI   0     0     R4   
-	# END EXPRESSION [ R4 ]
+# FOR LOOP: 
+	# FOR INITIALIZATION: 
+		# VARIABLE DECLARATION:
+			# EXPRESSION [ 0 ]: 
+				# R4 = 0
+				IADDI   0     0     R4   
+			# END EXPRESSION [ R4 ]
 
-	# int i = R4
-	ISTORE  65534 R4    0    
-# END VARIABLE DECLARATION [ int i = R4 ]
+			# int i = R4
+			ISTORE  65534 R4    0    
+		# END VARIABLE DECLARATION [ int i = R4 ]
 
-# WHILE LOOP: 
-	# WHILE CONDITION: 
-		@whileLabel1: IADDI   0     0     0    
+	# END FOR INTIALIZATION
+
+	# FOR CONDITION: 
+		@forLabel1: IADDI   0     0     0    
 		# EXPRESSION [ i < 64 ]: 
 			# [65533] = i
 			ILOADI  65534 0     R5   
@@ -54,12 +57,42 @@ IFILLI  0     0     0
 			ILOADI  65533 0     R4   
 		# END EXPRESSION [ R4 ]
 
-		# if while condition false, jump out of loop
 		LNOTI   R4    0     R4   
-		JMPI    R4    0     @whileLabel2
-	# END WHILE CONDITION
+		JMPI    R4    0     @forLabel4
+	# END FOR CONDITION
 
-	# WHILE BODY: 
+	# FOR UPDATE: 
+		IJMPI   1     0     @forLabel2
+		@forLabel3: IADDI   0     0     0    
+
+		# ASSIGN STATEMENT:
+			# EXPRESSION [ i + 2 ]: 
+				# [65533] = i
+				ILOADI  65534 0     R5   
+				ISTORE  65533 R5    0    
+
+				# [65532] = 2
+				ISTOREI 65532 2     0    
+
+				# [65532] = [65533] + [65532]
+				ILOADI  65532 0     R6   
+				ILOADI  65533 0     R5   
+				ADD     R5    R6    R7   
+				ISTORE  65533 R7    0    
+
+				# R4 = [65533]
+				ILOADI  65533 0     R4   
+			# END EXPRESSION [ R4 ]
+
+			# i = R4
+			ISTORE  65534 R4    0    
+		# END ASSIGN STATEMENT [ i = R4 ]
+
+		IJMPI   1     0     @forLabel1
+		@forLabel2: IADDI   0     0     0    
+	# END FOR UPDATE
+
+	# FOR BODY: 
 		# COLOR(): 
 			# EXPRESSION [ 33 ]: 
 				# R4 = 33
@@ -147,34 +180,11 @@ IFILLI  0     0     0
 			PIXEL   R4    R5    0    
 		# END PUTPIXEL()
 
-		# ASSIGN STATEMENT:
-			# EXPRESSION [ i + 2 ]: 
-				# [65533] = i
-				ILOADI  65534 0     R5   
-				ISTORE  65533 R5    0    
+	# END FOR BODY
 
-				# [65532] = 2
-				ISTOREI 65532 2     0    
-
-				# [65532] = [65533] + [65532]
-				ILOADI  65532 0     R6   
-				ILOADI  65533 0     R5   
-				ADD     R5    R6    R7   
-				ISTORE  65533 R7    0    
-
-				# R4 = [65533]
-				ILOADI  65533 0     R4   
-			# END EXPRESSION [ R4 ]
-
-			# i = R4
-			ISTORE  65534 R4    0    
-		# END ASSIGN STATEMENT [ i = R4 ]
-
-	# END WHILE BODY
-
-	IJMPI   1     0     @whileLabel1
-	@whileLabel2: IADDI   0     0     0    
-# END WHILE LOOP
+	IJMPI   1     0     @forLabel3
+	@forLabel4: IADDI   0     0     0    
+# END FOR LOOP
 
 # VARIABLE DECLARATION:
 	# EXPRESSION [ 100 ]: 
@@ -183,9 +193,9 @@ IFILLI  0     0     0
 	# END EXPRESSION [ R4 ]
 
 	# int result = R4
-	ISTORE  65533 R4    0    
+	ISTORE  65534 R4    0    
 # END VARIABLE DECLARATION [ int result = R4 ]
 
 # DEBUG: Load variable result into R15
-ILOADI  65533 0     R15  
+ILOADI  65534 0     R15  
 HALT    0     0     0    
