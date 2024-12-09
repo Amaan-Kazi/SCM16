@@ -1,201 +1,222 @@
-# COLOR(): 
-	# EXPRESSION [ 0 ]: 
-		# R4 = 0
-		IADDI   0     0     R4   
+# VARIABLE DECLARATION:
+	# EXPRESSION [ 10 ]: 
+		# R4 = 10
+		IADDI   0     10    R4   
 	# END EXPRESSION [ R4 ]
 
-	# EXPRESSION [ 0 ]: 
-		# R5 = 0
-		IADDI   0     0     R5   
-	# END EXPRESSION [ R5 ]
-
-	# EXPRESSION [ 0 ]: 
-		# R6 = 0
-		IADDI   0     0     R6   
-	# END EXPRESSION [ R6 ]
-
-	# COLOR [ R4, R5, R6 ]
-	SHLI    R4    8     R4   
-	ADD     R4    R5    R4   
-	COLOR   R4    R6    0    
-# END COLOR()
-
-# FILL(): 
-IFILLI  0     0     0    
-
-# FOR LOOP: 
-	# FOR INITIALIZATION: 
-		# VARIABLE DECLARATION:
-			# EXPRESSION [ 0 ]: 
-				# R4 = 0
-				IADDI   0     0     R4   
-			# END EXPRESSION [ R4 ]
-
-			# int i = R4
-			ISTORE  65534 R4    0    
-		# END VARIABLE DECLARATION [ int i = R4 ]
-
-	# END FOR INTIALIZATION
-
-	# FOR CONDITION: 
-		@forLabel1: IADDI   0     0     0    
-		# EXPRESSION [ i < 64 ]: 
-			# [65533] = i
-			ILOADI  65534 0     R5   
-			ISTORE  65533 R5    0    
-
-			# [65532] = 64
-			ISTOREI 65532 64    0    
-
-			# [65532] = [65533] < [65532]
-			ILOADI  65532 0     R6   
-			ILOADI  65533 0     R5   
-			BLTU    R5    R6    R7   
-			ISTORE  65533 R7    0    
-
-			# R4 = [65533]
-			ILOADI  65533 0     R4   
-		# END EXPRESSION [ R4 ]
-
-		LNOTI   R4    0     R4   
-		JMPI    R4    0     @forLabel4
-	# END FOR CONDITION
-
-	# FOR UPDATE: 
-		IJMPI   1     0     @forLabel2
-		@forLabel3: IADDI   0     0     0    
-
-		# ASSIGN STATEMENT:
-			# EXPRESSION [ i + 2 ]: 
-				# [65533] = i
-				ILOADI  65534 0     R5   
-				ISTORE  65533 R5    0    
-
-				# [65532] = 2
-				ISTOREI 65532 2     0    
-
-				# [65532] = [65533] + [65532]
-				ILOADI  65532 0     R6   
-				ILOADI  65533 0     R5   
-				ADD     R5    R6    R7   
-				ISTORE  65533 R7    0    
-
-				# R4 = [65533]
-				ILOADI  65533 0     R4   
-			# END EXPRESSION [ R4 ]
-
-			# i = R4
-			ISTORE  65534 R4    0    
-		# END ASSIGN STATEMENT [ i = R4 ]
-
-		IJMPI   1     0     @forLabel1
-		@forLabel2: IADDI   0     0     0    
-	# END FOR UPDATE
-
-	# FOR BODY: 
-		# COLOR(): 
-			# EXPRESSION [ 33 ]: 
-				# R4 = 33
-				IADDI   0     33    R4   
-			# END EXPRESSION [ R4 ]
-
-			# EXPRESSION [ 209 ]: 
-				# R5 = 209
-				IADDI   0     209   R5   
-			# END EXPRESSION [ R5 ]
-
-			# EXPRESSION [ 72 ]: 
-				# R6 = 72
-				IADDI   0     72    R6   
-			# END EXPRESSION [ R6 ]
-
-			# COLOR [ R4, R5, R6 ]
-			SHLI    R4    8     R4   
-			ADD     R4    R5    R4   
-			COLOR   R4    R6    0    
-		# END COLOR()
-
-		# PUTPIXEL(): 
-			# EXPRESSION [ 20 ]: 
-				# R4 = 20
-				IADDI   0     20    R4   
-			# END EXPRESSION [ R4 ]
-
-			# EXPRESSION [ i ]: 
-				# R5 = i
-				ILOADI  65534 0     R5   
-			# END EXPRESSION [ R5 ]
-
-			# PUT PIXEL [ R4, R5 ]
-			PIXEL   R4    R5    0    
-		# END PUTPIXEL()
-
-		# COLOR(): 
-			# EXPRESSION [ 0 ]: 
-				# R4 = 0
-				IADDI   0     0     R4   
-			# END EXPRESSION [ R4 ]
-
-			# EXPRESSION [ 238 ]: 
-				# R5 = 238
-				IADDI   0     238   R5   
-			# END EXPRESSION [ R5 ]
-
-			# EXPRESSION [ 255 ]: 
-				# R6 = 255
-				IADDI   0     255   R6   
-			# END EXPRESSION [ R6 ]
-
-			# COLOR [ R4, R5, R6 ]
-			SHLI    R4    8     R4   
-			ADD     R4    R5    R4   
-			COLOR   R4    R6    0    
-		# END COLOR()
-
-		# PUTPIXEL(): 
-			# EXPRESSION [ 21 ]: 
-				# R4 = 21
-				IADDI   0     21    R4   
-			# END EXPRESSION [ R4 ]
-
-			# EXPRESSION [ i + 1 ]: 
-				# [65533] = i
-				ILOADI  65534 0     R6   
-				ISTORE  65533 R6    0    
-
-				# [65532] = 1
-				ISTOREI 65532 1     0    
-
-				# [65532] = [65533] + [65532]
-				ILOADI  65532 0     R7   
-				ILOADI  65533 0     R6   
-				ADD     R6    R7    R8   
-				ISTORE  65533 R8    0    
-
-				# R5 = [65533]
-				ILOADI  65533 0     R5   
-			# END EXPRESSION [ R5 ]
-
-			# PUT PIXEL [ R4, R5 ]
-			PIXEL   R4    R5    0    
-		# END PUTPIXEL()
-
-	# END FOR BODY
-
-	IJMPI   1     0     @forLabel3
-	@forLabel4: IADDI   0     0     0    
-# END FOR LOOP
+	# int i = R4
+	ISTORE  65534 R4    0    
+# END VARIABLE DECLARATION [ int i = R4 ]
 
 # VARIABLE DECLARATION:
-	# EXPRESSION [ 100 ]: 
-		# R4 = 100
-		IADDI   0     100   R4   
-	# END EXPRESSION [ R4 ]
+	# int x = 0
+	ISTOREI 65533 0     0    
+# END VARIABLE DECLARATION [ int x = 0 ]
 
-	# int result = R4
-	ISTORE  65534 R4    0    
-# END VARIABLE DECLARATION [ int result = R4 ]
+# VARIABLE DECLARATION:
+	# int result = 0
+	ISTOREI 65532 0     0    
+# END VARIABLE DECLARATION [ int result = 0 ]
+
+# CONDITIONAL BRANCHES: 
+	# IF: 
+		# IF CONDITION: 
+			# EXPRESSION [ i < 10 && x == 0 ]: 
+				# [65531] = i
+				ILOADI  65534 0     R5   
+				ISTORE  65531 R5    0    
+
+				# [65530] = 10
+				ISTOREI 65530 10    0    
+
+				# [65530] = [65531] < [65530]
+				ILOADI  65530 0     R6   
+				ILOADI  65531 0     R5   
+				BLTU    R5    R6    R7   
+				ISTORE  65531 R7    0    
+
+				# [65530] = x
+				ILOADI  65533 0     R5   
+				ISTORE  65530 R5    0    
+
+				# [65529] = 0
+				ISTOREI 65529 0     0    
+
+				# [65529] = [65530] == [65529]
+				ILOADI  65529 0     R6   
+				ILOADI  65530 0     R5   
+				BEQ     R5    R6    R7   
+				ISTORE  65530 R7    0    
+
+				# [65530] = [65531] && [65530]
+				ILOADI  65530 0     R6   
+				ILOADI  65531 0     R5   
+				LAND    R5    R6    R7   
+				ISTORE  65531 R7    0    
+
+				# R4 = [65531]
+				ILOADI  65531 0     R4   
+			# END EXPRESSION [ R4 ]
+
+			LNOTI   R4    0     R4   
+			JMPI    R4    0     @ifLabel2
+		# END IF CONDITION
+
+		# IF BODY: 
+			# ASSIGN STATEMENT:
+				# EXPRESSION [ 100 ]: 
+					# R4 = 100
+					IADDI   0     100   R4   
+				# END EXPRESSION [ R4 ]
+
+				# result = R4
+				ISTORE  65532 R4    0    
+			# END ASSIGN STATEMENT [ result = R4 ]
+
+		# END IF BODY
+
+		IJMPI   1     0     @ifLabel1
+		@ifLabel2: IADDI   0     0     0    
+	# END IF
+
+	# ELSE IF: 
+		# ELSE IF CONDITION: 
+			# EXPRESSION [ i < 20 && x == 0 ]: 
+				# [65531] = i
+				ILOADI  65534 0     R5   
+				ISTORE  65531 R5    0    
+
+				# [65530] = 20
+				ISTOREI 65530 20    0    
+
+				# [65530] = [65531] < [65530]
+				ILOADI  65530 0     R6   
+				ILOADI  65531 0     R5   
+				BLTU    R5    R6    R7   
+				ISTORE  65531 R7    0    
+
+				# [65530] = x
+				ILOADI  65533 0     R5   
+				ISTORE  65530 R5    0    
+
+				# [65529] = 0
+				ISTOREI 65529 0     0    
+
+				# [65529] = [65530] == [65529]
+				ILOADI  65529 0     R6   
+				ILOADI  65530 0     R5   
+				BEQ     R5    R6    R7   
+				ISTORE  65530 R7    0    
+
+				# [65530] = [65531] && [65530]
+				ILOADI  65530 0     R6   
+				ILOADI  65531 0     R5   
+				LAND    R5    R6    R7   
+				ISTORE  65531 R7    0    
+
+				# R4 = [65531]
+				ILOADI  65531 0     R4   
+			# END EXPRESSION [ R4 ]
+
+			LNOTI   R4    0     R4   
+			JMPI    R4    0     @elseIfLabel3
+		# END ELSE IF CONDITION: 
+
+		# ELSE IF BODY: 
+			# ASSIGN STATEMENT:
+				# EXPRESSION [ 200 ]: 
+					# R4 = 200
+					IADDI   0     200   R4   
+				# END EXPRESSION [ R4 ]
+
+				# result = R4
+				ISTORE  65532 R4    0    
+			# END ASSIGN STATEMENT [ result = R4 ]
+
+		# END ELSE IF BODY
+
+		IJMPI   1     0     @ifLabel1
+		@elseIfLabel3: IADDI   0     0     0    
+	# END ELSE IF
+
+	# ELSE IF: 
+		# ELSE IF CONDITION: 
+			# EXPRESSION [ i < 30 && x == 0 ]: 
+				# [65531] = i
+				ILOADI  65534 0     R5   
+				ISTORE  65531 R5    0    
+
+				# [65530] = 30
+				ISTOREI 65530 30    0    
+
+				# [65530] = [65531] < [65530]
+				ILOADI  65530 0     R6   
+				ILOADI  65531 0     R5   
+				BLTU    R5    R6    R7   
+				ISTORE  65531 R7    0    
+
+				# [65530] = x
+				ILOADI  65533 0     R5   
+				ISTORE  65530 R5    0    
+
+				# [65529] = 0
+				ISTOREI 65529 0     0    
+
+				# [65529] = [65530] == [65529]
+				ILOADI  65529 0     R6   
+				ILOADI  65530 0     R5   
+				BEQ     R5    R6    R7   
+				ISTORE  65530 R7    0    
+
+				# [65530] = [65531] && [65530]
+				ILOADI  65530 0     R6   
+				ILOADI  65531 0     R5   
+				LAND    R5    R6    R7   
+				ISTORE  65531 R7    0    
+
+				# R4 = [65531]
+				ILOADI  65531 0     R4   
+			# END EXPRESSION [ R4 ]
+
+			LNOTI   R4    0     R4   
+			JMPI    R4    0     @elseIfLabel4
+		# END ELSE IF CONDITION: 
+
+		# ELSE IF BODY: 
+			# ASSIGN STATEMENT:
+				# EXPRESSION [ 300 ]: 
+					# R4 = 300
+					IADDI   0     300   R4   
+				# END EXPRESSION [ R4 ]
+
+				# result = R4
+				ISTORE  65532 R4    0    
+			# END ASSIGN STATEMENT [ result = R4 ]
+
+		# END ELSE IF BODY
+
+		IJMPI   1     0     @ifLabel1
+		@elseIfLabel4: IADDI   0     0     0    
+	# END ELSE IF
+
+	# ELSE: 
+		# ELSE BODY: 
+			# ASSIGN STATEMENT:
+				# EXPRESSION [ 6900 ]: 
+					# R4 = 6900
+					IADDI   0     6900  R4   
+				# END EXPRESSION [ R4 ]
+
+				# result = R4
+				ISTORE  65532 R4    0    
+			# END ASSIGN STATEMENT [ result = R4 ]
+
+		# END ELSE BODY
+	# END ELSE
+
+	@ifLabel1: IADDI   0     0     0    
+# END CONDITIONAL BRANCHING
 
 # DEBUG: Load variable result into R15
-ILOADI  65534 0     R15  
+ILOADI  65532 0     R15  
 HALT    0     0     0    

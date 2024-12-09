@@ -1,6 +1,6 @@
 from compiler.codegenerator.expressions import infix_to_postfix, expression
 from compiler.codegenerator.variables   import var_decl_start, var_decl, assign_stmt_start, assign_stmt
-from compiler.codegenerator.branching   import if_condition, else_if_condition, if_start, if_end, else_end, if_stmt
+from compiler.codegenerator.branching   import if_condition_start, if_condition, if_start, if_end, else_if_condition_start, else_if_condition, else_if_start, else_if_end, else_start, else_end, if_stmt
 from compiler.codegenerator.while_loop  import while_condition_start, while_condition, while_stmt
 from compiler.codegenerator.for_loop    import for_start, for_condition_start, for_condition, for_update_start, for_update_end, for_stmt
 from compiler.codegenerator.display     import putpixel_start, putpixel, color_start, color, fill
@@ -121,12 +121,20 @@ class CodeGenerator(Transformer):
 
 
     ## BRANCHING ##
-    if_condition      = if_condition
-    else_if_condition = else_if_condition
-    if_start          = if_start
-    if_end            = if_end
-    else_end          = else_end
-    if_stmt           = if_stmt
+    if_condition_start = if_condition_start
+    if_condition       = if_condition
+    if_start           = if_start
+    if_end             = if_end
+
+    else_if_condition_start = else_if_condition_start
+    else_if_condition       = else_if_condition
+    else_if_start           = else_if_start
+    else_if_end             = else_if_end
+
+    else_start = else_start
+    else_end   = else_end
+
+    if_stmt = if_stmt
 
 
     ## WHILE LOOP ##

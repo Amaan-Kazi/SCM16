@@ -32,13 +32,20 @@ array_assign_stmt: NAME array_access "=" expression
 
 
 // BRANCHING //
-if_stmt: "if" "(" if_condition ")" if_start statement* if_end  ("else if" "(" else_if_condition ")" if_start statement* if_end)*  ("else" if_start statement* else_end)?
+if_stmt: "if" if_condition_start if_condition ")" if_start statement* if_end    ("else if" else_if_condition_start else_if_condition ")" else_if_start statement* else_if_end)*    ("else" else_start statement* else_end)?
+
+if_condition_start: "("
+else_if_condition_start: "("
 
 if_condition: expression
 else_if_condition: expression
 
 if_start: "{"
+else_if_start: "{"
+else_start: "{"
+
 if_end: "}"
+else_if_end: "}"
 else_end: "}"
 
 

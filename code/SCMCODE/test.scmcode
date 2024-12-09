@@ -10,17 +10,22 @@
 //     putpixel(21, i + 1);
 // }
 
-// same as above test code but with while loop
-color(0, 0, 0);
-fill();
+// int result = 100;
 
-for (int i = 0; i < 64; i = i + 2)
-{
-    color(33, 209, 72);
-    putpixel(20, i);
 
-    color(0, 238, 255);
-    putpixel(21, i + 1);
+int i = 10;
+int x;
+int result;
+
+if (i < 10 && x == 0) {
+    result = 100;
 }
-
-int result = 100;
+else if (i < 20 && x == 0) {
+    result = 200;
+}
+else if (i < 30 && x == 0) {
+    result = 300;
+}
+else {
+    result = 6900;
+}
