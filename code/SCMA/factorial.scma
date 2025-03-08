@@ -1,113 +1,113 @@
+# VARIABLE DECLARATION:
+	# EXPRESSION [ 5 ]: 
+		# R4 = 5
+		IADDI   0     5     R4   
+	# END EXPRESSION [ R4 ]
 
-## EXPRESSION START ##
+	# int num = R4
+	ISTORE  65534 R4    0    
+# END VARIABLE DECLARATION [ int num = R4 ]
 
-# R6 = 5
-IADDI 0 5 R6
+# VARIABLE DECLARATION:
+	# EXPRESSION [ 1 ]: 
+		# R4 = 1
+		IADDI   0     1     R4   
+	# END EXPRESSION [ R4 ]
 
-## EXPRESSION END ##
+	# int factorial = R4
+	ISTORE  65533 R4    0    
+# END VARIABLE DECLARATION [ int factorial = R4 ]
 
-# int num = R6
-ISTORE 65534 R6 0
+# WHILE LOOP: 
+	# WHILE CONDITION: 
+		@whileLabel1: IADDI   0     0     0    
+		# EXPRESSION [ num > 1 ]: 
+			# [65532] = num
+			ILOADI  65534 0     R5   
+			ISTORE  65532 R5    0    
 
-## EXPRESSION START ##
+			# [65531] = 1
+			ISTOREI 65531 1     0    
 
-# R6 = 1
-IADDI 0 1 R6
+			# [65531] = [65532] > [65531]
+			ILOADI  65531 0     R6   
+			ILOADI  65532 0     R5   
+			BGTU    R5    R6    R7   
+			ISTORE  65532 R7    0    
 
-## EXPRESSION END ##
+			# R4 = [65532]
+			ILOADI  65532 0     R4   
+		# END EXPRESSION [ R4 ]
 
-# int factorial = R6
-ISTORE 65533 R6 0
+		# if while condition false, jump out of loop
+		LNOTI   R4    0     R4   
+		JMPI    R4    0     @whileLabel2
+	# END WHILE CONDITION
 
-## WHILE CONDITION ##
-@whileLabel1: IADDI 0 0 0
+	# WHILE BODY: 
+		# ASSIGN STATEMENT:
+			# EXPRESSION [ factorial * num ]: 
+				# [65532] = factorial
+				ILOADI  65533 0     R5   
+				ISTORE  65532 R5    0    
 
-## EXPRESSION START ##
+				# [65531] = num
+				ILOADI  65534 0     R5   
+				ISTORE  65531 R5    0    
 
-# [65532] = num
-ILOADI 65534 0 R7
-ISTORE 65532 R7 0
+				# [65531] = [65532] * [65531]
+				ILOADI  65531 0     R6   
+				ILOADI  65532 0     R5   
+				MUL     R5    R6    R7   
+				ISTORE  65532 R7    0    
 
-# [65531] = 1
-ISTOREI 65531 1 0
+				# R4 = [65532]
+				ILOADI  65532 0     R4   
+			# END EXPRESSION [ R4 ]
 
-# [65531] = [65532] > [65531]
-ILOADI 65531 0 R8
-ILOADI 65532 0 R7
-BGTU R7 R8 R9
-ISTORE 65532 R9 0
+			# factorial = R4
+			ISTORE  65533 R4    0    
+		# END ASSIGN STATEMENT [ factorial = R4 ]
 
-# R6 = [65532]
-ILOADI 65532 0 R6
+		# ASSIGN STATEMENT:
+			# EXPRESSION [ num - 1 ]: 
+				# [65532] = num
+				ILOADI  65534 0     R5   
+				ISTORE  65532 R5    0    
 
-## EXPRESSION END ##
+				# [65531] = 1
+				ISTOREI 65531 1     0    
 
-## WHILE START ##
-LNOTI R6 0 R6
-JMPI R6 0 @whileLabel2
+				# [65531] = [65532] - [65531]
+				ILOADI  65531 0     R6   
+				ILOADI  65532 0     R5   
+				SUB     R5    R6    R7   
+				ISTORE  65532 R7    0    
 
-## EXPRESSION START ##
+				# R4 = [65532]
+				ILOADI  65532 0     R4   
+			# END EXPRESSION [ R4 ]
 
-# [65532] = factorial
-ILOADI 65533 0 R7
-ISTORE 65532 R7 0
+			# num = R4
+			ISTORE  65534 R4    0    
+		# END ASSIGN STATEMENT [ num = R4 ]
 
-# [65531] = num
-ILOADI 65534 0 R7
-ISTORE 65531 R7 0
+	# END WHILE BODY
 
-# [65531] = [65532] * [65531]
-ILOADI 65531 0 R8
-ILOADI 65532 0 R7
-MUL R7 R8 R9
-ISTORE 65532 R9 0
+	IJMPI   1     0     @whileLabel1
+	@whileLabel2: IADDI   0     0     0    
+# END WHILE LOOP
 
-# R6 = [65532]
-ILOADI 65532 0 R6
+# VARIABLE DECLARATION:
+	# EXPRESSION [ factorial ]: 
+		# R4 = factorial
+		ILOADI  65533 0     R4   
+	# END EXPRESSION [ R4 ]
 
-## EXPRESSION END ##
-
-# factorial = R6
-ISTORE 65533 R6 0
-
-## EXPRESSION START ##
-
-# [65532] = num
-ILOADI 65534 0 R7
-ISTORE 65532 R7 0
-
-# [65531] = 1
-ISTOREI 65531 1 0
-
-# [65531] = [65532] - [65531]
-ILOADI 65531 0 R8
-ILOADI 65532 0 R7
-SUB R7 R8 R9
-ISTORE 65532 R9 0
-
-# R6 = [65532]
-ILOADI 65532 0 R6
-
-## EXPRESSION END ##
-
-# num = R6
-ISTORE 65534 R6 0
-
-## WHILE END ##
-IJMPI 1 0 @whileLabel1
-@whileLabel2: IADDI 0 0 0
-
-## EXPRESSION START ##
-
-# R6 = factorial
-ILOADI 65533 0 R6
-
-## EXPRESSION END ##
-
-# int result = R6
-ISTORE 65532 R6 0
+	# int result = R4
+	ISTORE  65532 R4    0    
+# END VARIABLE DECLARATION [ int result = R4 ]
 
 # DEBUG: Load variable result into R15
-ILOADI 65532 0 R15
-
-HALT 0 0 0
+ILOADI  65532 0     R15  
+HALT    0     0     0    

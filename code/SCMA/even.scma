@@ -1,163 +1,173 @@
+# VARIABLE DECLARATION:
+	# EXPRESSION [ 10 ]: 
+		# R4 = 10
+		IADDI   0     10    R4   
+	# END EXPRESSION [ R4 ]
 
-# EXPRESSION START #
+	# int n = R4
+	ISTORE  65534 R4    0    
+# END VARIABLE DECLARATION [ int n = R4 ]
 
-# R6 = 10
-IADDI 0 10 R6
+# VARIABLE DECLARATION:
+	# int sum = 0
+	ISTOREI 65533 0     0    
+# END VARIABLE DECLARATION [ int sum = 0 ]
 
-# EXPRESSION END #
+# FOR LOOP: 
+	# FOR INITIALIZATION: 
+		# VARIABLE DECLARATION:
+			# EXPRESSION [ 1 ]: 
+				# R4 = 1
+				IADDI   0     1     R4   
+			# END EXPRESSION [ R4 ]
 
-# int n = R6
-ISTORE 65534 R6 0
+			# int i = R4
+			ISTORE  65532 R4    0    
+		# END VARIABLE DECLARATION [ int i = R4 ]
 
-# int sum = 0
-ISTOREI 65533 0 0
+	# END FOR INTIALIZATION
 
-# EXPRESSION START #
+	# FOR CONDITION: 
+		@forLabel1: IADDI   0     0     0    
+		# EXPRESSION [ i <= n ]: 
+			# [65531] = i
+			ILOADI  65532 0     R5   
+			ISTORE  65531 R5    0    
 
-# R6 = 1
-IADDI 0 1 R6
+			# [65530] = n
+			ILOADI  65534 0     R5   
+			ISTORE  65530 R5    0    
 
-# EXPRESSION END #
+			# [65530] = [65531] <= [65530]
+			ILOADI  65530 0     R6   
+			ILOADI  65531 0     R5   
+			BLEU    R5    R6    R7   
+			ISTORE  65531 R7    0    
 
-# int i = R6
-ISTORE 65532 R6 0
+			# R4 = [65531]
+			ILOADI  65531 0     R4   
+		# END EXPRESSION [ R4 ]
 
-## FOR LOOP START ##
-@forLabel1: IADDI 0 0 0
+		LNOTI   R4    0     R4   
+		JMPI    R4    0     @forLabel4
+	# END FOR CONDITION
 
-# EXPRESSION START #
+	# FOR UPDATE: 
+		IJMPI   1     0     @forLabel2
+		@forLabel3: IADDI   0     0     0    
 
-# [65531] = i
-ILOADI 65532 0 R7
-ISTORE 65531 R7 0
+		# ASSIGN STATEMENT:
+			# EXPRESSION [ i + 1 ]: 
+				# [65531] = i
+				ILOADI  65532 0     R5   
+				ISTORE  65531 R5    0    
 
-# [65530] = n
-ILOADI 65534 0 R7
-ISTORE 65530 R7 0
+				# [65530] = 1
+				ISTOREI 65530 1     0    
 
-# [65530] = [65531] <= [65530]
-ILOADI 65530 0 R8
-ILOADI 65531 0 R7
-BLEU R7 R8 R9
-ISTORE 65531 R9 0
+				# [65530] = [65531] + [65530]
+				ILOADI  65530 0     R6   
+				ILOADI  65531 0     R5   
+				ADD     R5    R6    R7   
+				ISTORE  65531 R7    0    
 
-# R6 = [65531]
-ILOADI 65531 0 R6
+				# R4 = [65531]
+				ILOADI  65531 0     R4   
+			# END EXPRESSION [ R4 ]
 
-# EXPRESSION END #
+			# i = R4
+			ISTORE  65532 R4    0    
+		# END ASSIGN STATEMENT [ i = R4 ]
 
-# FOR LOOP CONDITION #
-LNOTI R6 0 R6
-JMPI R6 0 @forLabel4
+		IJMPI   1     0     @forLabel1
+		@forLabel2: IADDI   0     0     0    
+	# END FOR UPDATE
 
-IJMPI 1 0 @forLabel2
-@forLabel3: IADDI 0 0 0
+	# FOR BODY: 
+		# CONDITIONAL BRANCHES: 
+			# IF: 
+				# IF CONDITION: 
+					# EXPRESSION [ i % 2 == 0 ]: 
+						# [65531] = i
+						ILOADI  65532 0     R5   
+						ISTORE  65531 R5    0    
 
-# EXPRESSION START #
+						# [65530] = 2
+						ISTOREI 65530 2     0    
 
-# [65531] = i
-ILOADI 65532 0 R7
-ISTORE 65531 R7 0
+						# [65530] = [65531] % [65530]
+						ILOADI  65530 0     R6   
+						ILOADI  65531 0     R5   
+						MOD     R5    R6    R7   
+						ISTORE  65531 R7    0    
 
-# [65530] = 1
-ISTOREI 65530 1 0
+						# [65530] = 0
+						ISTOREI 65530 0     0    
 
-# [65530] = [65531] + [65530]
-ILOADI 65530 0 R8
-ILOADI 65531 0 R7
-ADD R7 R8 R9
-ISTORE 65531 R9 0
+						# [65530] = [65531] == [65530]
+						ILOADI  65530 0     R6   
+						ILOADI  65531 0     R5   
+						BEQ     R5    R6    R7   
+						ISTORE  65531 R7    0    
 
-# R6 = [65531]
-ILOADI 65531 0 R6
+						# R4 = [65531]
+						ILOADI  65531 0     R4   
+					# END EXPRESSION [ R4 ]
 
-# EXPRESSION END #
+					LNOTI   R4    0     R4   
+					JMPI    R4    0     @ifLabel6
+				# END IF CONDITION
 
-# i = R6
-ISTORE 65532 R6 0
+				# IF BODY: 
+					# ASSIGN STATEMENT:
+						# EXPRESSION [ sum + i ]: 
+							# [65531] = sum
+							ILOADI  65533 0     R5   
+							ISTORE  65531 R5    0    
 
-IJMPI 1 0 @forLabel1
-@forLabel2: IADDI 0 0 0
+							# [65530] = i
+							ILOADI  65532 0     R5   
+							ISTORE  65530 R5    0    
 
-# EXPRESSION START #
+							# [65530] = [65531] + [65530]
+							ILOADI  65530 0     R6   
+							ILOADI  65531 0     R5   
+							ADD     R5    R6    R7   
+							ISTORE  65531 R7    0    
 
-# [65531] = i
-ILOADI 65532 0 R7
-ISTORE 65531 R7 0
+							# R4 = [65531]
+							ILOADI  65531 0     R4   
+						# END EXPRESSION [ R4 ]
 
-# [65530] = 2
-ISTOREI 65530 2 0
+						# sum = R4
+						ISTORE  65533 R4    0    
+					# END ASSIGN STATEMENT [ sum = R4 ]
 
-# [65530] = [65531] % [65530]
-ILOADI 65530 0 R8
-ILOADI 65531 0 R7
-MOD R7 R8 R9
-ISTORE 65531 R9 0
+				# END IF BODY
 
-# [65530] = 0
-ISTOREI 65530 0 0
+				IJMPI   1     0     @ifLabel5
+				@ifLabel6: IADDI   0     0     0    
+			# END IF
 
-# [65530] = [65531] == [65530]
-ILOADI 65530 0 R8
-ILOADI 65531 0 R7
-BEQ R7 R8 R9
-ISTORE 65531 R9 0
+			@ifLabel5: IADDI   0     0     0    
+		# END CONDITIONAL BRANCHING
 
-# R6 = [65531]
-ILOADI 65531 0 R6
+	# END FOR BODY
 
-# EXPRESSION END #
+	IJMPI   1     0     @forLabel3
+	@forLabel4: IADDI   0     0     0    
+# END FOR LOOP
 
-## IF START ##
-LNOTI R6 0 R6
-JMPI R6 0 @ifLabel6
+# VARIABLE DECLARATION:
+	# EXPRESSION [ sum ]: 
+		# R4 = sum
+		ILOADI  65533 0     R4   
+	# END EXPRESSION [ R4 ]
 
-# EXPRESSION START #
-
-# [65531] = sum
-ILOADI 65533 0 R7
-ISTORE 65531 R7 0
-
-# [65530] = i
-ILOADI 65532 0 R7
-ISTORE 65530 R7 0
-
-# [65530] = [65531] + [65530]
-ILOADI 65530 0 R8
-ILOADI 65531 0 R7
-ADD R7 R8 R9
-ISTORE 65531 R9 0
-
-# R6 = [65531]
-ILOADI 65531 0 R6
-
-# EXPRESSION END #
-
-# sum = R6
-ISTORE 65533 R6 0
-
-## IF END ##
-IJMPI 1 0 @ifLabel5
-@ifLabel6: IADDI 0 0 0
-
-@ifLabel5: IADDI 0 0 0
-
-IJMPI 1 0 @forLabel3
-@forLabel4: IADDI 0 0 0
-
-## FOR END ##
-
-# EXPRESSION START #
-
-# R6 = sum
-ILOADI 65533 0 R6
-
-# EXPRESSION END #
-
-# int result = R6
-ISTORE 65532 R6 0
+	# int result = R4
+	ISTORE  65532 R4    0    
+# END VARIABLE DECLARATION [ int result = R4 ]
 
 # DEBUG: Load variable result into R15
-ILOADI 65532 0 R15
-
-HALT 0 0 0
+ILOADI  65532 0     R15  
+HALT    0     0     0    

@@ -12,7 +12,7 @@ fill();
 int d = 3 - (2 * radius);
 int x;
 int y = radius;
-int firstPass = 1; // allows behaviour like do while loop
+int firstPass = 1; // for behaviour like do while loop
 
 while ((x <= y) || (firstPass == 1)) {
     firstPass = 0;
